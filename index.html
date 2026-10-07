@@ -483,7 +483,7 @@ html.fs .tabs{left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(sa
       <div class="crow"><span class="nm">Takes</span><b class="vl" id="cesV">15 s</b><div class="cstp"><button class="chip" id="cesM" aria-label="Ease 1 second shorter">−</button><button class="chip" id="cesP" aria-label="Ease 1 second longer">+</button></div></div>
     </div></div>
     <div class="ctotal" id="ctotal"></div>
-        <div class="glass clive" id="clive" hidden><div class="clrow"><div><b>Live curve</b><small id="cliveTxt"></small></div><button class="chip" id="ctest">Run the test</button></div><details class="apdet" id="cliveHow"><summary>How the test works</summary><div class="note" id="cliveHowTxt">A real curve changes the temperature while your Carta is running. The test starts a session at your peak temperature, sends ONE change 6 s after Ready, and watches whether your Carta follows. Cancel always works.</div></details></div>
+        <div class="glass clive" id="clive" hidden><div class="clrow"><div><b>Live curve</b><small id="cliveTxt"></small></div><button class="chip" id="ctest">Run the test</button></div><details class="apdet" id="cliveHow"><summary>How the test works</summary><div class="note" id="cliveHowTxt">A real curve changes the temperature while your Carta is running. The test starts a session at your Peak (510°F or more), sends ONE change 6 s after Ready (down to 480°F, the lowest allowed, so it never gets hotter than you chose), then checks your Carta’s last reading at the end of the session. Its reading follows the change either way, so that last reading is what tells whether the heat did. Cancel always works.</div></details></div>
     <button class="cta" id="cstart">Start session</button>
     <button class="cta ghost" id="cflat" style="height:50px" hidden>Start flat at the hold temperature</button>
     <button class="cta ghost" id="csave" style="height:50px">Save as preset</button>
@@ -1171,7 +1171,9 @@ else{$('looksLbl').hidden=true;$('looks').hidden=true;$('looksNote').hidden=true
    - The clock is the Carta's countdown since READY. The session starts at the curve's first temperature (your Start temperature), the app then steps it
      up, holds, and eases off. Any refusal, lost link or Cancel stops it; the Carta keeps its last temperature.
    - It leaves your button set to the curve's last temperature (shown to you at the end). */
-var CLKEY='carta.curveLive',cRun=null;
+/* v2: the first version unlocked curves from the reading alone. On the real Carta (2026-10-08, twice) the reading followed the change but its
+   last reading at the end of the session was far ABOVE the changed temperature, so a pass now also needs the end reading to agree. Old passes don't count. */
+var CLKEY='carta.curveLive.v2',cRun=null;
 function clState(){try{return JSON.parse(localStorage.getItem(CLKEY))}catch(e){return null}}
 function clSave(v){try{localStorage.setItem(CLKEY,JSON.stringify(v))}catch(e){}}
 function clAvail(){return isPhone()&&!READ_ONLY_BUILD}
@@ -1181,12 +1183,14 @@ function curveSteps(){var out=[],last=cv.st,lastT=-9,vari=Math.abs(cv.hi-cv.st)+
   for(var t=1;t<=cv.c;t++){var T=Math.round(clamp(planAt(t),480,565)),reach=(T===cv.hi&&last!==cv.hi)||(T===cv.lo&&t>=cv.b&&last!==cv.lo);
     if(T!==last&&t-lastT>=2&&(Math.abs(T-last)>=minD||reach)){out.push({t:t,T:T});last=T;lastT=t}}
   return out.slice(0,14)}
+var TEST_MIN_PEAK=510;
 function curveNote(txt){var n=$('curveNote');if(!n)return;n.hidden=!txt;if(txt)n.textContent=txt}
 function curveUI(){var c=$('cstart');if(!c)return;var av=clAvail(),st=clState(),ok=av&&!!st&&st.ok===true,bad=av&&!!st&&st.ok===false,when='';
   try{when=new Date(st.at).toLocaleDateString(undefined,{month:'short',day:'numeric'})}catch(e){}
   $('clive').hidden=!av;$('cflat').hidden=!ok;$('ctest').textContent=ok||bad?'Test again':'Run the test';
   $('cliveTxt').textContent=!av?'':ok?'On. Your Carta follows live changes'+(when?' (tested '+when+').':'.')
-    :bad?'Off. Your Carta ignored the test change, so Start holds one temperature.'
+    :bad?(st.why==='heat'?'Off. Your Carta’s reading followed the change, but its last reading ('+st.end+'°F) says the heat did not, so Start holds one temperature.'
+      :'Off. Your Carta ignored the test change, so Start holds one temperature.')
     :'Needs a one-time test on your Carta. Until then Start holds one temperature.';
   c.textContent=ok?'Start curve · '+cv.c+'s':(okT(cv.hi)&&okD(cv.c)?'Start at '+cv.hi+'°F · '+cv.c+'s':'Start session')}
 function curveRun(mode){
@@ -1197,14 +1201,15 @@ function curveRun(mode){
   if(live.sess!=='IDLE')return toast('A session is already running');
   if(!devLive()||!(live.on&&live.connected))return toast('Connect to your Carta first');
   if(startLocked())return toast(START_LOCK_MSG);   /* nothing is written while Start is locked */
+  if(mode==='test'&&cv.hi<TEST_MIN_PEAK)return toast('For the test, set Peak to '+TEST_MIN_PEAK+'°F or higher. The test drops to 480°F, and a smaller drop is too small to tell.');
   var before=dev.status?{temp:dev.status.conc_custom_temp,preset:dev.status.conc_preset}:null;   /* what your button was set to before this run touched it */
-  var steps=mode==='test'?[{t:6,T:cv.hi-20>=480?cv.hi-20:Math.min(565,cv.hi+20)}]:curveSteps();
+  var steps=mode==='test'?[{t:6,T:480}]:curveSteps();   /* the test only ever LOWERS the temperature, to the lowest allowed one: never hotter than the Peak you chose, and big enough to tell */
   if(!steps.length)return toast('This curve has no temperature changes to make. Use Start flat.');
   temp=mode==='test'?cv.hi:cv.st;tempSet=true;setLen(cv.c);          // the curve starts where the plan starts: your Start temperature
   runSteps(heatSteps(),0,function(){cRun={mode:mode,steps:steps,i:0,sent:0,busy:false,armed:Date.now(),started:false,sentAt:null,t0:null,ev:false,err:null,hold:mode==='test'?cv.hi:cv.st,lag:null,before:before};
     curveNote(mode==='test'?'Live-change test: waiting for Ready…':'Curve: waiting for Ready…');startConfirmed()})}
 function curveLine(r,t){var n=r.steps[r.i];
-  if(r.mode==='test')return r.sent?'Live-change test: change sent, watching whether your Carta follows…':'Live-change test: one change goes out '+Math.max(0,n.t-t)+' s from now.';
+  if(r.mode==='test')return r.sent?(r.ev&&r.moved?'Live-change test: the reading followed. Your Carta’s last reading at the end of the session decides whether the heat did.':'Live-change test: change sent, watching whether your Carta follows…'):'Live-change test: one change goes out '+Math.max(0,n.t-t)+' s from now.';
   return 'Curve running · '+r.sent+' of '+r.steps.length+' changes sent'+(n?' · next: '+n.T+'°F at '+n.t+' s':'')}
 function curveOnStart(){var c=$('ccap');if(c)c.hidden=true;var rb=$('crestore');if(rb)rb.hidden=true;if(cRun&&!cRun.started&&Date.now()-cRun.armed<120000)cRun.started=true;else if(cRun&&!cRun.started)cRun=null}
 function curveTick(){var r=cRun;if(!r)return;if(!r.started){if(Date.now()-r.armed>120000)cRun=null;return}
@@ -1223,17 +1228,28 @@ function curveEval(final){var r=cRun;if(!r||r.mode!=='test'||r.ev||r.sentAt==nul
   var tgt=r.steps[0].T,T0=r.t0,moved=pts.some(function(p){return tgt<T0?p.T<=T0-8:p.T>=T0+8});
   r.ev=true;var near=pts.filter(function(p){return Math.abs(p.T-tgt)<=2})[0];r.lag=near?Math.max(0,near.t-r.sentAt):null;
   if(pts.length<4&&!moved){curveNote('Test inconclusive: the session ended too soon. Run it again.');toast('Test inconclusive');return}
-  clSave({ok:moved,at:Date.now(),from:T0,to:tgt});curveUI();
-  curveNote(moved?'Test passed: your Carta moved from '+T0+'°F toward '+tgt+'°F. Live curves are unlocked.':'Test result: your Carta ignored the change (it stayed near '+T0+'°F). Curves can’t change the heat on this Carta.');
-  toast(moved?'Live curves unlocked':'Your Carta ignored the live change')}
-function curveOnEnd(){var r=cRun;if(!r)return;if(r.mode==='test'&&!r.ev)curveEval(true);
+  r.moved=moved;
+  if(!moved)return curveVerdict(r);   /* the reading ignored it: decided now */
+}
+/* After READY the Carta's reading is just the temperature it is set to (flat in every session we recorded), so a reading that follows the change does NOT prove the heat did.
+   Its LAST reading (the frame where its countdown hits 0) is the first real one: in a normal session it is a few degrees under the set temperature and then falls. */
+function curveEnd(){var p=cTrace[cTrace.length-1];return p&&live.dur&&p.t>=live.dur?p.T:null}
+function curveVerdict(r){if(r.done||r.moved===undefined)return;r.done=true;var tgt=r.steps[0].T,T0=r.t0,E=curveEnd();r.end=E;
+  if(!r.moved){clSave({ok:false,why:'reading',at:Date.now(),from:T0,to:tgt});curveUI();
+    curveNote('Test result: your Carta ignored the change (it stayed near '+T0+'°F). Curves can’t change the heat on this Carta.');toast('Your Carta ignored the live change');return}
+  if(E==null){curveNote('Test inconclusive: no last reading at the end of the session. Run it again.');toast('Test inconclusive');return}
+  var heat=E<=tgt+12;clSave({ok:heat,why:heat?'':'heat',at:Date.now(),from:T0,to:tgt,end:E});curveUI();
+  curveNote(heat?'Test passed: the reading moved from '+T0+'°F to '+tgt+'°F and your Carta’s last reading was '+E+'°F, in line with it. Live curves are unlocked.'
+    :'Test result: the reading moved to '+tgt+'°F, but your Carta’s last reading was '+E+'°F, well above that. The heat does not look like it followed, so curves stay off and Start holds one temperature.');
+  toast(heat?'Live curves unlocked':'The heat did not follow the change')}
+function curveOnEnd(){var r=cRun;if(!r)return;if(r.mode==='test'&&!r.ev)curveEval(true);if(r.mode==='test')curveVerdict(r);r.end=curveEnd();
   var last=r.steps.length&&r.sent?r.steps[Math.min(r.sent,r.steps.length)-1].T:null;
-  if(r.mode==='curve')curveNote((r.err?'Curve stopped early. ':'Curve finished. ')+r.sent+' of '+r.steps.length+' changes sent'+(last?'; your button now uses '+last+'°F (set your usual temperature on Heat if you want it back).':'.'));
+  if(r.mode==='curve')curveNote((r.err?'Curve stopped early. ':'Curve finished. ')+r.sent+' of '+r.steps.length+' changes sent'+(last?'; your button now uses '+last+'°F (set your usual temperature on Heat if you want it back).':'.')+(r.end!=null?' Its last reading was '+r.end+'°F.':''));
   curveCaptionLater(r);cRun=null;curveUI()}
 /* after a session: say what it was, and read back what your button's temperature is now (never assume) */
 function curveCaptionLater(r){setTimeout(function(){var c=$('ccap'),s=dev.status,now=s&&s.conc_custom_temp,txt='';if(!c)return;
   var stored=now==null?'':(r.mode==='test'&&now===r.hold?' Your button is back at '+now+'°F, so the change applied to that session only.':' Your button now uses '+now+'°F (set your usual temperature on Heat if you want it back).');
-  if(r.mode==='test'){if(r.sentAt==null)return;txt='That was the one-change test, not your curve: it held '+r.hold+'°F, then changed to '+r.steps[0].T+'°F at '+r.sentAt+' s. Your Carta’s reading '+(r.lag==null?'did not settle on the new value':(r.lag<=1?'followed straight away':'followed within '+r.lag+' s'))+'.'+stored}
+  if(r.mode==='test'){if(r.sentAt==null)return;txt='That was the one-change test, not your curve: it held '+r.hold+'°F, then changed to '+r.steps[0].T+'°F at '+r.sentAt+' s. Your Carta’s reading '+(r.lag==null?'did not settle on the new value':(r.lag<=1?'followed straight away':'followed within '+r.lag+' s'))+'.'+(r.end!=null?' At the very end it reported '+r.end+'°F.':'')+stored}
   else{if(!r.sent)return;txt='Curve run: '+r.sent+' of '+r.steps.length+' temperature changes went out.'+stored}
   c.textContent=txt;c.hidden=false;
   var rb=$('crestore'),b=r.before;   /* one tap puts your button's temperature back (a normal idle temperature store, same as Heat → Set) */
