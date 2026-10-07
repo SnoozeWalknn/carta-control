@@ -192,6 +192,15 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;bac
 .look.on{border-color:rgba(255,178,122,.6);box-shadow:inset 0 1px 0 var(--hi),0 0 0 1px rgba(255,178,122,.3)}
 .look b{display:block;height:12px;border-radius:7px;box-shadow:inset 0 0 0 1px #ffffff14}.look span{font-size:13.5px;font-weight:500}.look small{font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--mut)}
 .chip.warn{border-color:#ff3a2a;color:#ff8a7c}
+/* curve gauge */
+.cgauge{padding:16px;display:flex;flex-direction:column;gap:12px}
+.gcols{display:grid;grid-template-columns:1fr 1fr 1.25fr;gap:10px}.gcols .sl{display:block;font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--mut);margin-bottom:4px}
+.gcols b{display:block;font-family:var(--disp);font-weight:300;font-size:28px;letter-spacing:-.03em;font-variant-numeric:tabular-nums;line-height:1.05}#gState{font-size:15px;font-weight:400;letter-spacing:0;padding-top:8px}
+.gbar{height:8px;border-radius:5px;background:rgba(255,255,255,.08);overflow:hidden}.gbar i{display:block;height:100%;width:0;border-radius:5px;background:linear-gradient(90deg,#ff8a4c,#ffb27a);transition:width .4s}
+.gverdict{font-size:13px;line-height:1.45;color:var(--fg)}.gverdict.ok{color:#7be0a0}.gverdict.off{color:#ffb27a}
+.cleg{display:flex;gap:16px;align-items:center;font-size:11px;color:var(--mut);padding:0 4px}.cleg i{display:inline-block;width:18px;height:3px;border-radius:2px;margin-right:6px;vertical-align:middle}.cleg .lp{background:#ff9a5c}.cleg .la{background:#7be0ff}
+/* main build: no preview / demo badges */
+#heatDemo,#ledDemo{display:none!important}
 /* presets cards */
 .prow{display:flex;flex-wrap:wrap;align-items:center;gap:12px;padding:14px 16px;border-radius:22px}
 .pdot{flex:none;width:12px;height:12px;border-radius:50%;box-shadow:0 0 14px currentColor}
@@ -385,17 +394,24 @@ html.fs .tabs{left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(sa
 
   <!-- CURVE -->
   <section class="screen" id="s-curve">
-    <div class="head"><div><h1>Curve</h1><div class="sub">Drag the dots to shape the session.</div></div><span class="chip-demo">Preset only</span></div>
+    <div class="head"><div><h1>Curve</h1><div class="sub">Drag the dots to shape the session.</div></div></div>
     <div class="row" id="cpre"></div>
     <div class="glass curvebox" id="cb"><svg id="csvg" viewBox="0 0 350 220"></svg></div>
+    <div class="cleg" id="cleg" hidden><span><i class="lp"></i>Your curve</span><span><i class="la"></i>What your Carta did</span></div>
+    <div class="glass cgauge" id="cgauge" hidden>
+      <div class="gcols"><div><span class="sl">Now</span><b id="gNow">--</b></div><div><span class="sl">Curve says</span><b id="gTarget">--</b></div><div><span class="sl">State</span><b id="gState">--</b></div></div>
+      <div class="gbar"><i id="gFill"></i></div>
+      <div class="gverdict" id="gVerdict"></div>
+    </div>
     <div class="segs">
       <div class="glass seg"><div class="sl">Ramp up</div><b id="c1v"></b><div class="sub" id="c1t"></div></div>
       <div class="glass seg"><div class="sl">Hold</div><b id="c2v"></b><div class="sub" id="c2t"></div></div>
       <div class="glass seg"><div class="sl">Ease off</div><b id="c3v"></b><div class="sub" id="c3t"></div></div>
     </div>
-    <button class="cta" id="csave">Save as preset</button>
+    <button class="cta" id="cstart">Start session</button>
+    <button class="cta ghost" id="csave" style="height:50px">Save as preset</button>
     <details class="apdet" id="cShare"><summary>Share this curve</summary><div class="glass" style="padding:16px;display:flex;flex-direction:column;gap:10px"><div class="lbl">Share a curve</div><div style="display:flex;gap:8px"><input class="inp" id="ccode" placeholder="Paste a code to load it" aria-label="Share code"><button class="chip" id="capply">Load</button></div><button class="chip" id="cshare">Copy my code</button><div class="note">Codes work offline, never expire, and need no account.</div></div></details>
-    <div class="note">Your Carta can’t store curves, so saving one makes a preset: its hold temperature and session length (20–120 s), always inside 480–565°F.</div>
+    <div class="note">Start heats up and holds at your hold temperature for this length, always inside 480–565°F. Your Carta keeps one temperature per session, so the ramp and ease-off shapes are saved with a preset but can’t change the heat once it is running.</div>
   </section>
 
   <!-- LOG -->
@@ -619,7 +635,7 @@ function refreshUI(){
   $('connectBtn').disabled=dev.busy;$('connectBtn').textContent=dev.connected?'Refresh status':'Connect to Carta';$('connectBtn').classList.toggle('prime',!dev.connected);
   $('send').disabled=!canWrite();$('send').textContent='Save to slot '+slot;
   drawSlots();
-  $('hstat').textContent=dev.status?statusText():'Not connected · preview only';
+  $('hstat').textContent=dev.status?statusText():'Not connected';
   $('hbat').textContent=dev.status?dev.status.battery+'%':'--';
   heatSync();
 }
@@ -988,10 +1004,43 @@ function heatSteps(){var s=dev.status,st=[];
   if(userDur!=null&&!lenBad&&userDur!==s.conc_custom_dur)st.push({body:{action:'heat',temp:temp,duration:userDur},title:'Set session length to '+userDur+' s?',firstUse:true,
     undo:'Set the session length back to '+s.conc_custom_dur+' s.'});
   return st}
-function runSteps(steps,i){if(i===0)$('hundo').textContent='';if(i>=steps.length)return toast(steps.length>1?'All '+steps.length+' steps done':'Done');
+function runSteps(steps,i,fin){if(i===0)$('hundo').textContent='';if(i>=steps.length){if(fin)return fin();return toast(steps.length>1?'All '+steps.length+' steps done':'Done')}
   var s=steps[i];s.title=(steps.length>1?'Step '+(i+1)+' of '+steps.length+': ':'')+s.title;
-  prepare(s.body,s.title,{firstUse:!!s.firstUse,after:function(){var u=$('hundo');u.textContent+=(u.textContent?' · ':'')+'Suggested undo for step '+(i+1)+' (not sent): '+s.undo;runSteps(steps,i+1)},
+  prepare(s.body,s.title,{firstUse:!!s.firstUse,after:function(){var u=$('hundo');u.textContent+=(u.textContent?' · ':'')+'Suggested undo for step '+(i+1)+' (not sent): '+s.undo;runSteps(steps,i+1,fin)},
     stopped:function(){if(steps.length>1)toast(i+1===steps.length?'Stopped. Step '+(i+1)+' was not sent.':'Stopped. Steps '+(i+1)+'–'+steps.length+' were not sent.')}})}
+
+/* Curve → Start session. The Carta holds ONE temperature per session (it heats up on its own, then holds), and your rules allow no writes
+   during a session except Cancel, so this starts a normal session at the curve's HOLD temperature for the curve's length: the same
+   stores (only if they differ) and the same Start as the Heat tab. The ramp and ease-off shapes are not applied to the heater. */
+function curveBtn(){var b=$('cstart');if(!b)return;b.textContent=okT(cv.hi)&&okD(cv.c)?'Start at '+cv.hi+'°F · '+cv.c+'s':'Start session';if(typeof drawTrace==='function')drawTrace()}
+function curveStart(){
+  if(!okT(cv.hi))return toast(T_MSG+'.');
+  if(!okD(cv.c))return toast(D_MSG+' — this curve ends at '+cv.c+' s. Drag the last dot to 20 s or later.');
+  if(live.sess!=='IDLE')return toast('A session is already running');
+  if(!devLive()||!(live.on&&live.connected))return toast('Connect to your Carta first');
+  temp=cv.hi;tempSet=true;setLen(cv.c);
+  runSteps(heatSteps(),0,function(){startConfirmed()})}
+$('cstart').onclick=curveStart;   /* the label is set by the curve redraw (curveBtn) */
+
+/* Curve gauge: the Carta's own temperature against what the curve says it should be right now, plus the real trace drawn over the plan.
+   Nothing here is sent anywhere; it only reads the live status. */
+function planAt(t){var P=[[0,480],[cv.a,cv.hi],[cv.b,cv.hi],[cv.c,cv.lo],[60,cv.lo]];
+  for(var i=1;i<P.length;i++){if(t<=P[i][0]){var a=P[i-1],b=P[i],f=b[0]===a[0]?1:(t-a[0])/(b[0]-a[0]);return a[1]+(b[1]-a[1])*f}}return cv.lo}
+function drawTrace(){var sv=$('csvg'),old=sv.querySelector('#ctr');if(old)old.remove();
+  if(!cTrace.length){$('cleg').hidden=true;return}
+  var P=cTrace.map(function(p){return [cx(Math.min(60,p.t)),cy(clamp(p.T,480,565))]}),d=P.map(function(p,i){return(i?'L':'M')+p[0]+' '+p[1]}).join(''),e=P[P.length-1];
+  sv.insertAdjacentHTML('beforeend','<g id="ctr" style="pointer-events:none"><path d="'+d+'" fill="none" stroke="#7be0ff" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/><circle cx="'+e[0]+'" cy="'+e[1]+'" r="5" fill="#7be0ff"/></g>');
+  $('cleg').hidden=false}
+function curveGauge(){var run=live.sess!=='IDLE'&&live.connected,has=cTrace.length>0,show=run||has;$('cgauge').hidden=!show;if(!show){drawTrace();return}
+  var s=live.st;if(!s)return;var T=s.temp,rdy=live.sess==='READY',t=rdy?clamp(live.dur-s.remaining,0,60):null,tgt=rdy?planAt(t):cv.hi,dl=T-tgt,v=$('gVerdict');
+  $('gNow').textContent=T+'°F';$('gTarget').textContent=Math.round(tgt)+'°F';
+  $('gState').textContent=live.sess==='HEATING'?'Heating up':rdy?'Ready · '+mmss(s.remaining)+' left':'Last session';
+  $('gFill').style.width=Math.round(clamp((T-72)/Math.max(1,tgt-72),0,1)*100)+'%';
+  v.className='gverdict';
+  if(live.sess==='HEATING'){v.textContent='Heating to '+cv.hi+'°F. The curve starts when your Carta says Ready.'}
+  else if(rdy){if(Math.abs(dl)<=6){v.textContent='On the curve (within 6°F)';v.className='gverdict ok'}else{v.textContent=Math.round(Math.abs(dl))+'°F '+(dl>0?'above':'below')+' the curve right now. Your Carta holds one temperature per session.';v.className='gverdict off'}}
+  else{v.textContent='Session finished. The blue line is what your Carta actually did.'}
+  drawTrace()}
 /* Looks: ready-made multi-colour LED patterns (phone page). A look = a pattern + the Carta's five LED colour entries (the official
    app fills the same five entries for its multi-colour patterns). Picking one only fills the pending light; nothing is sent until
    Save → Approve. How the Carta cycles the five colours is up to the Carta. */
@@ -1062,7 +1111,7 @@ function mmss(s){s=Math.max(0,s|0);return Math.floor(s/60)+':'+('0'+s%60).slice(
 var live={es:null,on:false,want:false,connected:false,sess:'IDLE',dur:60,st:null,name:'',tries:0,retry:null,cancelling:false,cancelled:false,byApp:false,dismissed:false};
 /* session takeover: the session view opens full screen by itself when a session starts (or when you connect while one is
    running), stays closed for the rest of that session once you tap ✕, and closes by itself when the Carta goes idle */
-var sessOpen=false,sessCloseT=null;
+var sessOpen=false,sessCloseT=null,cTrace=[];   /* cTrace: {t: seconds since READY (the Carta's own countdown), T: its reported temperature} */
 function openSess(){if(live.dismissed||sessOpen)return;clearTimeout(sessCloseT);sessCloseT=null;$('s-sess').classList.add('on');sessOpen=true;updateAmb();sessButtons()}
 function closeSess(byUser){clearTimeout(sessCloseT);sessCloseT=null;$('s-sess').classList.remove('on');sessOpen=false;if(byUser&&live.sess!=='IDLE')live.dismissed=true;updateAmb();sessButtons()}
 function closeSessSoon(){if(sessCloseT)return;sessCloseT=setTimeout(function(){sessCloseT=null;if(live.sess==='IDLE')closeSess(false)},2500)}   /* idle: close after 2.5 s */
@@ -1104,12 +1153,14 @@ function heatNow(s){var run=live.sess!=='IDLE'&&live.connected;$('hnowBox').hidd
   var d=hPrev==null?0:s.temp-hPrev;if(d!==0){live.trend=d>0?1:-1}if(hPrev==null)live.trend=0;hPrev=s.temp;
   $('hnowD').textContent=live.trend>0?'▲':live.trend<0?'▼':'';$('hnowS').textContent='Reported by your Carta'+(live.trend>0?' · rising':live.trend<0?' · falling':' · steady')}
 function onStatus(s){if(!s)return;live.st=s;lsInfo();heatNow(s);
+  if(live.sess==='READY'){var tt=live.dur-s.remaining;if(tt>=0&&(!cTrace.length||cTrace[cTrace.length-1].t!==tt))cTrace.push({t:tt,T:s.temp})}
+  if(typeof curveGauge==='function')curveGauge();
   if(live.sess==='READY'){$('rtime').textContent=mmss(s.remaining);$('rsub').textContent='left';
     var fr=clamp(1-s.remaining/live.dur,0,1);[$('pr'),$('pg')].forEach(function(x){x.setAttribute('stroke-dashoffset',CIRC*fr)})}
   else{$('rtime').textContent=s.temp;$('rsub').textContent='°'+s.unit+' now'}
   sessButtons()}
 function onSession(state,s){var prev=live.sess;live.sess=state;
-  if(state==='HEATING'&&prev!=='HEATING'){if(prev==='IDLE')logStart(live.byApp?'app':'button');live.byApp=false;openSess();
+  if(state==='HEATING'&&prev!=='HEATING'){if(prev==='IDLE'){logStart(live.byApp?'app':'button');cTrace=[]}live.byApp=false;openSess();
     setPhase('heat');$('sstate').classList.remove('lost');$('sstate').textContent='Heating';
     $('smsg').textContent='Your Carta shows its own heat lights now. This screen pulses red until it is ready.'}
   else if(state==='READY'&&prev!=='READY'){live.dur=Math.max(1,(s&&s.remaining)||live.dur);logReady(s);openSess();setPhase('ready');$('sstate').textContent='Ready to hit';
@@ -1239,7 +1290,7 @@ function drawCurve(){
   [['a',cv.a,cv.hi],['b',cv.b,cv.hi],['c',cv.c,cv.lo]].forEach(function(p){h+='<circle data-k="'+p[0]+'" cx="'+cx(p[1])+'" cy="'+cy(p[2])+'" r="12" fill="#f4f1ec" stroke="#d9622a" stroke-width="4" style="cursor:grab"/>'});
   h+='<text x="'+PX+'" y="'+(CH-4)+'" fill="#8f8b84" font-size="10">0s</text><text x="'+(PX+TW/2-8)+'" y="'+(CH-4)+'" fill="#8f8b84" font-size="10">30s</text><text x="'+(CW-PR-14)+'" y="'+(CH-4)+'" fill="#8f8b84" font-size="10">60s</text>';
   $('csvg').innerHTML=h;
-  $('c1t').textContent='0–'+cv.a+' s\n'+((cv.hi-480)/cv.a).toFixed(1)+'°F/s';$('c1v').textContent=cv.hi+'°F';$('c2t').textContent=cv.a+'–'+cv.b+' s';$('c2v').textContent=cv.hi+'°F';$('c3t').textContent=cv.b+'–'+cv.c+' s';$('c3v').textContent=cv.lo+'°F';
+  $('c1t').textContent='0–'+cv.a+' s\n'+((cv.hi-480)/cv.a).toFixed(1)+'°F/s';$('c1v').textContent=cv.hi+'°F';$('c2t').textContent=cv.a+'–'+cv.b+' s';$('c2v').textContent=cv.hi+'°F';$('c3t').textContent=cv.b+'–'+cv.c+' s';$('c3v').textContent=cv.lo+'°F';if(typeof curveBtn==='function')curveBtn();
 }
 var dk=null;
 $('cb').addEventListener('pointerdown',function(e){var k=e.target.getAttribute&&e.target.getAttribute('data-k');if(k){dk=k;$('cb').setPointerCapture(e.pointerId)}});
