@@ -1245,11 +1245,11 @@ function curveVerdict(r){if(r.done||r.moved===undefined)return;r.done=true;var t
   toast(heat?'Live curves unlocked':'The heat did not follow the change')}
 function curveOnEnd(){var r=cRun;if(!r)return;if(r.mode==='test'&&!r.ev)curveEval(true);if(r.mode==='test')curveVerdict(r);r.end=curveEnd();
   var last=r.steps.length&&r.sent?r.steps[Math.min(r.sent,r.steps.length)-1].T:null;
-  if(r.mode==='curve')curveNote((r.err?'Curve stopped early. ':'Curve finished. ')+r.sent+' of '+r.steps.length+' changes sent'+(last?'; your button now uses '+last+'°F (set your usual temperature on Heat if you want it back).':'.')+(r.end!=null?' Its last reading was '+r.end+'°F.':''));
+  if(r.mode==='curve')curveNote((r.err?'Curve stopped early. ':'Curve finished. ')+r.sent+' of '+r.steps.length+' changes sent'+(last?'; your button now uses '+last+'°F.':'.')+(r.end!=null?' Its last reading was '+r.end+'°F.':''));
   curveCaptionLater(r);cRun=null;curveUI()}
 /* after a session: say what it was, and read back what your button's temperature is now (never assume) */
 function curveCaptionLater(r){setTimeout(function(){var c=$('ccap'),s=dev.status,now=s&&s.conc_custom_temp,txt='';if(!c)return;
-  var stored=now==null?'':(r.mode==='test'&&now===r.hold?' Your button is back at '+now+'°F, so the change applied to that session only.':' Your button now uses '+now+'°F (set your usual temperature on Heat if you want it back).');
+  var stored=now==null?'':(r.mode==='test'&&now===r.hold?' Your button is back at '+now+'°F, so the change applied to that session only.':' Your button now uses '+now+'°F.');
   if(r.mode==='test'){if(r.sentAt==null)return;txt='That was the one-change test, not your curve: it held '+r.hold+'°F, then changed to '+r.steps[0].T+'°F at '+r.sentAt+' s. Your Carta’s reading '+(r.lag==null?'did not settle on the new value':(r.lag<=1?'followed straight away':'followed within '+r.lag+' s'))+'.'+(r.end!=null?' At the very end it reported '+r.end+'°F.':'')+stored}
   else{if(!r.sent)return;txt='Curve run: '+r.sent+' of '+r.steps.length+' temperature changes went out.'+stored}
   c.textContent=txt;c.hidden=false;
