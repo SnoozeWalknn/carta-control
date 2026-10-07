@@ -139,7 +139,7 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;bac
 .ripple.go{animation:rip 1.5s ease-out}
 @keyframes rip{0%{opacity:.9;transform:scale(1)}100%{opacity:0;transform:scale(14)}}
 /* curve + log */
-.curvebox{padding:12px}
+.curvebox{padding:12px;touch-action:none}
 .curvebox svg{width:100%;height:auto;display:block}
 .seg{display:flex;justify-content:space-between;align-items:center;padding:14px 18px}
 .seg b{font-family:var(--disp);font-size:22px;font-weight:300;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
@@ -218,15 +218,6 @@ html.phoneui #watchBtn,html.phoneui #sessChip{display:none}   /* on the phone, C
 .lenbox{position:relative;width:104px;flex:none}.lenbox .inp{width:100%;flex:none;text-align:center;font-size:17px;padding:0 24px 0 10px}.lenbox span{position:absolute;right:15px;top:50%;transform:translateY(-50%);font-size:13px;color:var(--mut);pointer-events:none}
 /* slots: lock glyph + a real switch */
 .slot small{font-size:8px;letter-spacing:.14em}
-/* curve gauge */
-.cgauge,.clive{padding:16px;display:flex;flex-direction:column;gap:12px}#cliveTxt{font-size:13px;line-height:1.5;color:var(--mut)}
-#curveNote{max-width:300px;color:var(--fg)}
-.gcols{display:grid;grid-template-columns:1fr 1fr 1.25fr;gap:10px}.gcols .sl{display:block;font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--mut);margin-bottom:4px}
-.gcols b{display:block;font-family:var(--disp);font-weight:300;font-size:28px;letter-spacing:-.03em;font-variant-numeric:tabular-nums;line-height:1.05}#gState{font-size:15px;font-weight:400;letter-spacing:0;padding-top:8px}
-.gbar{height:8px;border-radius:5px;background:rgba(255,255,255,.08);overflow:hidden}.gbar i{display:block;height:100%;width:0;border-radius:5px;background:linear-gradient(90deg,#ff8a4c,#ffb27a);transition:width .4s}
-.gverdict{font-size:13px;line-height:1.45;color:var(--fg)}.gverdict.ok{color:#7be0a0}.gverdict.off{color:#ffb27a}
-.ccap{padding:0 4px;font-size:13px;line-height:1.5;color:var(--fg)}
-.cleg{display:flex;gap:16px;align-items:center;font-size:11px;color:var(--mut);padding:0 4px}.cleg i{display:inline-block;width:18px;height:3px;border-radius:2px;margin-right:6px;vertical-align:middle}.cleg .lp{background:#ff9a5c}.cleg .la{background:#7be0ff}
 /* main build: no preview / demo badges */
 #heatDemo,#ledDemo{display:none!important}
 /* presets cards */
@@ -237,43 +228,8 @@ html.phoneui #watchBtn,html.phoneui #sessChip{display:none}   /* on the phone, C
 .pbar{display:flex;gap:6px}.pbar .chip{padding:9px 12px;min-height:40px}
 .pmore{flex-basis:100%;display:flex;flex-wrap:wrap;gap:6px;padding-top:10px;border-top:1px solid var(--bd)}.pmore[hidden]{display:none}
 .pempty{padding:18px;color:var(--mut);font-size:13px;line-height:1.5}
-#s-presets .lbl,#s-curve .lbl{margin-top:4px}
-/* curve: one-row templates + stat cards */
-#cpre{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}#cpre .chip{padding:0 2px;min-height:42px;letter-spacing:.08em;font-size:10.5px;text-align:center;justify-content:center}
-.segs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.segs[hidden]{display:none}
-#cShare{display:none}
-/* simple curve */
-#cpre{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
-#cpre .shp{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:9px 2px 8px;min-height:64px;letter-spacing:.06em;font-size:9.5px;text-align:center}
-#cpre .shp svg{width:100%;height:24px;display:block}#cpre .shp path{fill:none;stroke:var(--mut);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}#cpre .shp.on path{stroke:#ff9a5c}
-.csum{text-align:center;font-size:13px;letter-spacing:.04em;color:var(--mut);font-variant-numeric:tabular-nums}.csum b{color:var(--fg);font-weight:500}
-.csteps{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-/* Apple-style inset grouped list with a capsule stepper */
-.cgroup{border-radius:20px;background:linear-gradient(160deg,rgba(255,255,255,.07),rgba(255,255,255,.025));border:1px solid var(--bd);box-shadow:inset 0 1px 0 var(--hi);overflow:hidden}
-.crow{display:flex;align-items:center;gap:10px;padding:8px 10px 8px 18px;min-height:64px}.crow+.crow{border-top:1px solid rgba(255,255,255,.07)}
-.crow .nm{flex:1;font-size:16.5px;letter-spacing:-.01em;color:var(--fg)}
-.crow .vl{min-width:88px;text-align:right;font-family:var(--disp);font-weight:300;font-size:27px;letter-spacing:-.035em;font-variant-numeric:tabular-nums;white-space:nowrap}
-.cstp{display:flex;flex:none;height:44px;border-radius:22px;background:rgba(255,255,255,.1);overflow:hidden;box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
-.cstp .chip{width:50px;height:44px;min-width:50px;min-height:44px;padding:0;border:0;border-radius:0;background:none;box-shadow:none;font-size:21px;font-weight:300;color:var(--fg);display:flex;align-items:center;justify-content:center;touch-action:manipulation;transition:background .15s}
-.cstp .chip+.chip{border-left:1px solid rgba(255,255,255,.13)}.cstp .chip:active{background:rgba(255,255,255,.16)}
-/* shape picker: sentence case, soft preview, glowing selection */
-#cpre .shp{text-transform:none;letter-spacing:0;font-size:11.5px;font-weight:500;color:var(--mut);border-radius:18px;transition:background .2s,border-color .2s,box-shadow .2s,color .2s}
-#cpre .shp:active{transform:scale(.97)}
-#cpre .shp .fa{fill:rgba(255,255,255,.055);stroke:none}
-#cpre .shp.on{color:var(--fg);background:linear-gradient(160deg,rgba(255,154,92,.2),rgba(255,154,92,.06));border-color:rgba(255,178,122,.55);box-shadow:0 0 0 1px rgba(255,178,122,.14),0 10px 26px rgba(255,138,76,.14)}
-#cpre .shp.on .fa{fill:rgba(255,154,92,.24)}
+#s-presets .lbl{margin-top:4px}
 .cta:active,.chip:active{transform:scale(.985)}
-.cstage{display:flex;flex-direction:column;gap:8px}
-.ctotal{text-align:center;font-size:13px;letter-spacing:.04em;color:var(--mut);font-variant-numeric:tabular-nums}.ctotal b{color:var(--fg);font-weight:500}.cstep{min-width:0;padding:14px 12px 12px;display:flex;flex-direction:column;gap:8px;align-items:stretch}
-.cstep .sl{font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--mut);text-align:center}
-.cstep>b{display:block;text-align:center;font-family:var(--disp);font-weight:300;font-size:34px;letter-spacing:-.03em;font-variant-numeric:tabular-nums;white-space:nowrap;line-height:1.1}
-.csrow{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.csrow .chip{min-height:46px;padding:0;font-size:20px;touch-action:manipulation;display:flex;align-items:center;justify-content:center}
-.clrow{display:flex;align-items:center;justify-content:space-between;gap:12px}.clrow>div{min-width:0}.clrow .chip{flex:none;white-space:nowrap}.clrow b{display:block;font-size:15px;font-weight:500}.clrow small{display:block;margin-top:3px;font-size:12.5px;line-height:1.4;color:var(--mut)}
-#s-curve .seg{flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:5px;padding:14px 14px}
-#s-curve .seg .sl{font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--mut)}#s-curve .seg b{font-size:25px}
-#s-curve .seg .sub{font-size:11px;line-height:1.35;white-space:pre-line}
 /* finish */
 #pName,#pCode,#ccode{flex:none;height:44px;width:100%;box-sizing:border-box}
 .inp:focus{outline:none;border-color:rgba(255,178,122,.7);box-shadow:0 0 0 3px rgba(255,138,76,.16)}
@@ -445,51 +401,10 @@ html.fs .tabs{left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(sa
     <div class="state" id="sstate">Idle</div>
     <div class="steps" id="steps"><span>Heating</span><span>Ready</span><span>Session</span></div>
     <div class="hnow" id="hnowBox" hidden><div class="lbl">Heat now</div><div class="hn"><span id="hnowT">--</span><span class="hu" id="hnowU">°F</span><span class="hd" id="hnowD"></span></div><div class="lbl" id="hnowS">Reported by your Carta</div></div>
-    <div class="note" id="curveNote" hidden></div>
     <div class="note" id="smsg" style="max-width:260px">This view opens by itself when a session starts.</div>
     <div class="row" style="justify-content:center"><button class="chip on" id="tvib">Vibrate at ready</button><button class="chip on" id="tsnd">Chime</button><button class="chip" id="sndBtn">Tap to enable sound</button></div>
     <button class="cta ghost" id="cancel" style="max-width:240px;height:50px" hidden>Cancel session</button>
     <div class="note" id="startHint" style="max-width:260px;color:var(--fg)">Start it with the button on your Carta</div>
-  </section>
-
-  <!-- CURVE -->
-  <section class="screen" id="s-curve">
-    <div class="head"><div><h1>Curve</h1><div class="sub">Pick a shape, then fine-tune every temperature and time.</div></div></div>
-    <div class="row" id="cpre"></div>
-    <div class="glass curvebox" id="cb"><svg id="csvg" viewBox="0 0 350 220"></svg></div>
-    <div class="cleg" id="cleg" hidden><span><i class="lp"></i>Your curve</span><span><i class="la"></i>What your Carta reported</span></div>
-    <div class="ccap" id="ccap" hidden></div>
-    <button class="chip" id="crestore" hidden style="align-self:flex-start"></button>
-    <div class="glass cgauge" id="cgauge" hidden>
-      <div class="gcols"><div><span class="sl">Now</span><b id="gNow">--</b></div><div><span class="sl">Curve says</span><b id="gTarget">--</b></div><div><span class="sl">State</span><b id="gState">--</b></div></div>
-      <div class="gbar"><i id="gFill"></i></div>
-      <div class="gverdict" id="gVerdict"></div>
-    </div>
-    <div class="segs" hidden aria-hidden="true">
-      <div class="seg"><div class="sl">Ramp up</div><b id="c1v"></b><div class="sub" id="c1t"></div></div>
-      <div class="seg"><div class="sl">Hold</div><b id="c2v"></b><div class="sub" id="c2t"></div></div>
-      <div class="seg"><div class="sl">Ease off</div><b id="c3v"></b><div class="sub" id="c3t"></div></div>
-    </div>
-    <div class="csum" id="csum"></div>
-    <div class="cstage"><div class="lbl">Ramp up</div><div class="cgroup">
-      <div class="crow"><span class="nm">From</span><b class="vl" id="cstV">480°F</b><div class="cstp"><button class="chip" id="cstM" aria-label="Start 1 degree lower">−</button><button class="chip" id="cstP" aria-label="Start 1 degree higher">+</button></div></div>
-      <div class="crow"><span class="nm">Takes</span><b class="vl" id="crmV">10 s</b><div class="cstp"><button class="chip" id="crmM" aria-label="Ramp 1 second shorter">−</button><button class="chip" id="crmP" aria-label="Ramp 1 second longer">+</button></div></div>
-    </div></div>
-    <div class="cstage"><div class="lbl">Hold</div><div class="cgroup">
-      <div class="crow"><span class="nm">At</span><b class="vl" id="cpkV">535°F</b><div class="cstp"><button class="chip" id="cpkM" aria-label="Peak 1 degree lower">−</button><button class="chip" id="cpkP" aria-label="Peak 1 degree higher">+</button></div></div>
-      <div class="crow"><span class="nm">For</span><b class="vl" id="chdV">30 s</b><div class="cstp"><button class="chip" id="chdM" aria-label="Hold 1 second shorter">−</button><button class="chip" id="chdP" aria-label="Hold 1 second longer">+</button></div></div>
-    </div></div>
-    <div class="cstage"><div class="lbl">Ease off</div><div class="cgroup">
-      <div class="crow"><span class="nm">To</span><b class="vl" id="cedV">500°F</b><div class="cstp"><button class="chip" id="cedM" aria-label="End 1 degree lower">−</button><button class="chip" id="cedP" aria-label="End 1 degree higher">+</button></div></div>
-      <div class="crow"><span class="nm">Takes</span><b class="vl" id="cesV">15 s</b><div class="cstp"><button class="chip" id="cesM" aria-label="Ease 1 second shorter">−</button><button class="chip" id="cesP" aria-label="Ease 1 second longer">+</button></div></div>
-    </div></div>
-    <div class="ctotal" id="ctotal"></div>
-        <div class="glass clive" id="clive" hidden><div class="clrow"><div><b>Live curve</b><small id="cliveTxt"></small></div><button class="chip" id="ctest">Run the test</button></div><details class="apdet" id="cliveHow"><summary>How the test works</summary><div class="note" id="cliveHowTxt">A real curve changes the temperature while your Carta is running. The test starts a session at your Peak (510°F or more), sends ONE change 6 s after Ready (down to 480°F, the lowest allowed, so it never gets hotter than you chose), then checks your Carta’s last reading at the end of the session. Its reading follows the change either way, so that last reading is what tells whether the heat did. Cancel always works.</div></details></div>
-    <button class="cta" id="cstart">Start session</button>
-    <button class="cta ghost" id="cflat" style="height:50px" hidden>Start flat at the hold temperature</button>
-    <button class="cta ghost" id="csave" style="height:50px">Save as preset</button>
-    <details class="apdet" id="cShare"><summary>Share this curve</summary><div class="glass" style="padding:16px;display:flex;flex-direction:column;gap:10px"><div class="lbl">Share a curve</div><div style="display:flex;gap:8px"><input class="inp" id="ccode" placeholder="Paste a code to load it" aria-label="Share code"><button class="chip" id="capply">Load</button></div><button class="chip" id="cshare">Copy my code</button><div class="note">Codes work offline, never expire, and need no account.</div></div></details>
-    <div class="note">Every temperature stays inside 480–565°F and the whole curve inside 20–120 s.</div>
   </section>
 
   <!-- LOG -->
@@ -560,7 +475,6 @@ html.fs .tabs{left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(sa
     <button class="tab on" data-t="heat"><svg viewBox="0 0 24 24"><path d="M12 3c1 3.5 5 5.5 5 10a5 5 0 0 1-10 0c0-2 1-3 2-4 .3 1.4 1 2 2 2-.5-3 .5-5.5 1-8z"/></svg>Heat</button>
     <button class="tab" data-t="presets"><svg viewBox="0 0 24 24"><path d="M4 7h9M19 7h1M4 17h1M11 17h9"/><circle cx="16" cy="7" r="2.4"/><circle cx="8" cy="17" r="2.4"/></svg>Presets</button>
     <button class="tab" data-t="led"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3"/></svg>Light</button>
-    <button class="tab" data-t="curve"><svg viewBox="0 0 24 24"><path d="M3 19c4 0 4-12 9-12s4 12 9 12"/></svg>Curve</button>
     <button class="tab" data-t="hist"><svg viewBox="0 0 24 24"><path d="M5 20V10M12 20V4M19 20v-7"/></svg>Log</button>
   </nav>
   <div class="toast" id="toast"></div>
@@ -573,7 +487,7 @@ var clamp=function(x,a,b){return Math.max(a,Math.min(b,x))};
 var vib=function(p){try{navigator.vibrate&&navigator.vibrate(p)}catch(e){}};
 var PRESETS=[['Blue',480,60,'#4c8dff'],['Yellow',495,55,'#f5c542'],['Green',515,50,'#4cd98a'],['Purple',535,45,'#a678ff'],['Red',565,40,'#ff5a4d']];
 var temp=515,dur=50,tmr=null,inSession=false,phaseNow='idle';
-var TABS=['heat','presets','led','curve','hist'],cur='heat';
+var TABS=['heat','presets','led','hist'],cur='heat';
 
 /* ambient + tabs */
 function amb(rgb){$('phone').style.setProperty('--amb',rgb)}
@@ -870,7 +784,7 @@ SessState.prototype.feed=function(b){var before=this.name();if(b[0]===0x99&&b.le
 SessState.prototype.name=function(){return !this.remaining?'IDLE':(this.ready?'READY':'HEATING')};
 function emit(ev){if(ph.live)ph.live(ev)}
 function onFrame(b){ph.lastFrame=Date.now();var changed=ph.sess.feed(b);
-  if(b[0]===0x99&&b.length===20){if(b[5]===0){ph.curveN=0;ph.curveRem=null}ph.latest=b;ph.seq++;ph.waiters.slice().forEach(function(w){w()});var s=statusObj(b);emit({type:'status',status:s});if(changed)emit({type:'session',state:changed,status:s})}
+  if(b[0]===0x99&&b.length===20){ph.latest=b;ph.seq++;ph.waiters.slice().forEach(function(w){w()});var s=statusObj(b);emit({type:'status',status:s});if(changed)emit({type:'session',state:changed,status:s})}
   else if(changed)emit({type:'session',state:changed,status:ph.latest?statusObj(ph.latest):null})}
 function waitStatus(pred,ms,fresh){var start=ph.seq;return new Promise(function(res){var t=setTimeout(function(){done(null)},ms);
   function check(){if(ph.latest&&(!fresh||ph.seq>start)&&pred(ph.latest))done(ph.latest)}
@@ -907,10 +821,9 @@ function buildFor(body,st){var a=body.action;
   if(a==='select'||a==='restore'){var n=a==='restore'?5:+body.slot;if(!(n>=1&&n<=5))refuse('invalid slot');return [selectFrame(st,n),{led_slot:n}]}
   if(a==='heat'){var d=body.duration==null||body.duration===''?null:+body.duration,f=ccStore(st,+body.temp,d),al={'preset conc':0,'target conc':+body.temp};if(d!=null)al['dur conc']=d;return [f,al]}
   refuse('unknown action')}
-var WRITE_PATHS=['/api/send','/api/live/cancel','/api/live/prepare-start','/api/live/start-session','/api/live/curve-step'];
-var CURVE_MAX=14;
+var WRITE_PATHS=['/api/send','/api/live/cancel','/api/live/prepare-start','/api/live/start-session'];
 var START_LOCK_MSG='Start is locked until Cancel has worked once from this phone. Start a session with your Carta’s button, then tap Cancel session here. One time only.';
-function startLocked(){return isPhone()&&!lsGet('carta.cancelVerified',null)}   /* the owner's rule: Start stays locked until a real Cancel has worked from this phone */   /* the most live temperature changes one session may carry */
+function startLocked(){return isPhone()&&!lsGet('carta.cancelVerified',null)}   /* the owner's rule: Start stays locked until a real Cancel has worked from this phone */
 function phoneApi(path,body){body=body||{};
   if(READ_ONLY_BUILD&&!(CANCEL_ENABLED&&path==='/api/live/cancel')&&(WRITE_PATHS.indexOf(path)>=0||(path==='/api/prepare'&&body.action!=='status')))
     return Promise.resolve({ok:false,readonly:true,error:'This is the read-only test build: nothing can be sent to your Carta'+(CANCEL_ENABLED?' except Cancel':'')+'. Use Watch live, or the button on your Carta.'});
@@ -932,18 +845,6 @@ function phoneApi(path,body){body=body||{};
             .then(function(){var after=ph.latest,cmp=compareStatus(before,after,r[1]);sendLog(cmp.ok?'RESULT ok':'RESULT unexpected '+cmp.rows.join('; '));
               if(cmp.ok&&p.body.action==='set'){var k=lsGet('carta.known.v1',{});k[p.body.slot]='#'+String(p.body.color).replace('#','').toLowerCase();lsSet('carta.known.v1',k);if(p.multi)lsSet('carta.ledMultiOk',new Date().toISOString())}
               return {ok:true,result:{kind:'sent',ok:cmp.ok,frame:hx(f),before:hx(before),after:hx(after),suggested_undo:hx(selectFrame(before,before[13]>>4))}}})})})}
-    /* LIVE CURVE STEP (owner-approved 2026-10-07, the one exception to 'no writes during a session except Cancel'):
-       exactly the official temperature-store frame, rebuilt from live status, a whole °F inside 480-565, only while a session runs,
-       at most CURVE_MAX per session and at least 2 s apart on the Carta's own countdown. Nothing else may be written mid-session. */
-    if(path==='/api/live/curve-step'){var ct=+body.temp;
-      if(ct!==Math.round(ct)||!(ct>=480&&ct<=565))refuse('A curve step must be a whole number from 480 to 565 °F.');
-      if(st[5]===0)refuse('No session is running, so there is nothing to change.');
-      if((ph.curveN||0)>=CURVE_MAX)refuse('Curve limit reached: '+CURVE_MAX+' temperature changes in one session.');
-      if(ph.curveRem!=null&&(ph.curveRem-st[5])<2&&Date.now()-ph.curveAt<2000)refuse('Too soon after the last curve change.');
-      var cf=ccStore(st,ct,st[15]);checkFrame(cf);
-      return writeFrame(cf).then(function(){ph.curveN=(ph.curveN||0)+1;ph.curveRem=st[5];ph.curveAt=Date.now();
-          sendLog('SENT '+hx(cf)+'  CURVE STEP to '+ct+' °F (mid-session, owner-approved curve mode, change '+ph.curveN+')');return waitStatus(function(){return true},3000,true)})
-        .then(function(after){return {ok:true,result:{frame:hx(cf),temp:ct,n:ph.curveN,after:after?statusObj(after):null}}})}
     if(path==='/api/live/start')return {ok:true};
     if(path==='/api/live/cancel'){var before=st,f=ccCancel(before);checkFrame(f);
       return writeFrame(f).then(function(){sendLog('SENT '+hx(f)+'  CANCEL (one tap, pre-approved)');return waitStatus(function(b){return b[5]===0},4000,true)})
@@ -1029,10 +930,6 @@ function renderUserPresets(){var row=$('presets');document.querySelectorAll('#pr
     dv.appendChild(bb);dv.appendChild(document.createElement('br'));dv.appendChild(sp);b.appendChild(i);b.appendChild(dv);b._p=p;b.onclick=function(){loadPreset(p)};row.appendChild(b)});
   var m=document.createElement('button');m.className='pre pm';m.innerHTML='<div style="text-align:left"><b>＋</b><br><span>Presets</span></div>';m.setAttribute('aria-label','Manage presets');
   m.onclick=openPresetSheet;row.appendChild(m);if(cur==='presets')renderPresetSheet();try{drawDial()}catch(e){}}
-function renderCurvePresets(){renderUserPresets()}   /* name kept for the init line */
-function saveCurvePreset(){var on=document.querySelector('#cpre .chip.on'),name=on?on.textContent:'My curve';
-  if(!okT(cv.hi))return toast(T_MSG+'.');if(!okD(cv.c))return toast(D_MSG+' — this curve ends at '+cv.c+' s. Drag the last dot to 20 s or later.');
-  if(upAdd({n:name,t:cv.hi,d:cv.c}))toast('Saved as a preset: '+cv.hi+'°F · '+cv.c+'s. Nothing was sent.');vib(10)}
 /* manager sheet */
 function mkBtn(label,fn,aria){var b=document.createElement('button');b.className='chip';b.textContent=label;b.style.padding='8px 11px';if(aria)b.setAttribute('aria-label',aria);b.onclick=fn;return b}
 /* a preset card: dot, name, temperature · time, and two main actions; the rest live behind ⋯ */
@@ -1100,40 +997,6 @@ function runSteps(steps,i,fin){if(i===0)$('hundo').textContent='';if(i>=steps.le
   var s=steps[i];s.title=(steps.length>1?'Step '+(i+1)+' of '+steps.length+': ':'')+s.title;
   prepare(s.body,s.title,{firstUse:!!s.firstUse,after:function(){var u=$('hundo');u.textContent+=(u.textContent?' · ':'')+'Suggested undo for step '+(i+1)+' (not sent): '+s.undo;runSteps(steps,i+1,fin)},
     stopped:function(){if(steps.length>1)toast(i+1===steps.length?'Stopped. Step '+(i+1)+' was not sent.':'Stopped. Steps '+(i+1)+'–'+steps.length+' were not sent.')}})}
-
-/* Curve → Start session. The Carta holds ONE temperature per session (it heats up on its own, then holds), and your rules allow no writes
-   during a session except Cancel, so this starts a normal session at the curve's HOLD temperature for the curve's length: the same
-   stores (only if they differ) and the same Start as the Heat tab. The ramp and ease-off shapes are not applied to the heater. */
-function curveBtn(){if(typeof curveUI==='function')curveUI();if(typeof drawTrace==='function')drawTrace();if(typeof curveSimpleSync==='function')curveSimpleSync()}
-function curveStartFlat(){
-  if(!okT(cv.hi))return toast(T_MSG+'.');
-  if(!okD(cv.c))return toast(D_MSG+' — this curve ends at '+cv.c+' s. Drag the last dot to 20 s or later.');
-  if(live.sess!=='IDLE')return toast('A session is already running');
-  if(!devLive()||!(live.on&&live.connected))return toast('Connect to your Carta first');
-  if(startLocked())return toast(START_LOCK_MSG);   /* nothing is written (no temperature / length stores) while Start is locked */
-  temp=cv.hi;tempSet=true;setLen(cv.c);
-  runSteps(heatSteps(),0,function(){startConfirmed()})}
-/* the Curve buttons are wired in curve_live.js; the label is set by the curve redraw (curveBtn -> curveUI) */
-
-/* Curve gauge: the Carta's own temperature against what the curve says it should be right now, plus the real trace drawn over the plan.
-   Nothing here is sent anywhere; it only reads the live status. */
-function planAt(t){var P=[[0,cv.st],[cv.a,cv.hi],[cv.b,cv.hi],[cv.c,cv.lo],[CXM,cv.lo]];
-  for(var i=1;i<P.length;i++){if(t<=P[i][0]){var a=P[i-1],b=P[i],f=b[0]===a[0]?1:(t-a[0])/(b[0]-a[0]);return a[1]+(b[1]-a[1])*f}}return cv.lo}
-function drawTrace(){var sv=$('csvg'),old=sv.querySelector('#ctr');if(old)old.remove();
-  if(!cTrace.length){$('cleg').hidden=true;return}
-  var P=cTrace.map(function(p){return [cx(Math.min(CXM,p.t)),cy(clamp(p.T,480,565))]}),d=P.map(function(p,i){return(i?'L':'M')+p[0]+' '+p[1]}).join(''),e=P[P.length-1];
-  sv.insertAdjacentHTML('beforeend','<g id="ctr" style="pointer-events:none"><path d="'+d+'" fill="none" stroke="#7be0ff" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/><circle cx="'+e[0]+'" cy="'+e[1]+'" r="5" fill="#7be0ff"/></g>');
-  $('cleg').hidden=false}
-function curveGauge(){var run=live.sess!=='IDLE'&&live.connected,has=cTrace.length>0,show=run||has;$('cgauge').hidden=!show;if(!show){drawTrace();return}
-  var s=live.st;if(!s)return;var T=s.temp,rdy=live.sess==='READY',t=rdy?clamp(live.dur-s.remaining,0,CXM):null,tgt=rdy?planAt(t):(cRun&&cRun.mode==='curve'?cv.st:cv.hi),dl=T-tgt,v=$('gVerdict');
-  $('gNow').textContent=T+'°F';$('gTarget').textContent=Math.round(tgt)+'°F';
-  $('gState').textContent=live.sess==='HEATING'?'Heating up':rdy?'Ready · '+mmss(s.remaining)+' left':'Last session';
-  $('gFill').style.width=Math.round(clamp((T-72)/Math.max(1,tgt-72),0,1)*100)+'%';
-  v.className='gverdict';
-  if(live.sess==='HEATING'){v.textContent='Heating to '+Math.round(tgt)+'°F. The curve starts when your Carta says Ready.'}
-  else if(rdy){if(Math.abs(dl)<=6){v.textContent='On the curve (within 6°F)';v.className='gverdict ok'}else{v.textContent=Math.round(Math.abs(dl))+'°F '+(dl>0?'above':'below')+' the curve right now. Your Carta holds one temperature per session.';v.className='gverdict off'}}
-  else{v.textContent='Session finished. The blue line is what your Carta reported: during a session it reports the temperature it is set to hold.'}
-  drawTrace()}
 /* Looks: ready-made multi-colour LED patterns (phone page). A look = a pattern + the Carta's five LED colour entries (the official
    app fills the same five entries for its multi-colour patterns). Picking one only fills the pending light; nothing is sent until
    Save → Approve. How the Carta cycles the five colours is up to the Carta. */
@@ -1164,162 +1027,6 @@ if(isPhone()){var lastG=null,lrow=null;LOOKS.forEach(function(l){if(l[3]!==lastG
     b.className='look';b.setAttribute('data-n',l[0]);b.innerHTML='<b style="background:'+bg+'"></b><span></span><small></small>';
     b.querySelector('span').textContent=l[0];b.querySelector('small').textContent=l[1];b.onclick=function(){lookPick(l)};lrow.appendChild(b)})}
 else{$('looksLbl').hidden=true;$('looks').hidden=true;$('looksNote').hidden=true}
-/* LIVE CURVE (phone page only). A real curve needs the Carta to change its temperature while a session runs.
-   Owner decision 2026-10-07: allowed for Curve mode ONLY, as the single exception to "no writes during a session except Cancel".
-   - It is LOCKED until a supervised test proves this Carta follows a live change (ONE change, 6 s after Ready, then we watch).
-   - The only frame ever written mid-session is the official temperature-store frame (phone layer: /api/live/curve-step), whole °F inside
-     480-565, at most 14 per session, at least 2 s apart on the Carta's own countdown.
-   - The clock is the Carta's countdown since READY. The session starts at the curve's first temperature (your Start temperature), the app then steps it
-     up, holds, and eases off. Any refusal, lost link or Cancel stops it; the Carta keeps its last temperature.
-   - It leaves your button set to the curve's last temperature (shown to you at the end). */
-/* v2: the first version unlocked curves from the reading alone. On the real Carta (2026-10-08, twice) the reading followed the change but its
-   last reading at the end of the session was far ABOVE the changed temperature, so a pass now also needs the end reading to agree. Old passes don't count. */
-var CLKEY='carta.curveLive.v2',cRun=null;
-function clState(){try{return JSON.parse(localStorage.getItem(CLKEY))}catch(e){return null}}
-function clSave(v){try{localStorage.setItem(CLKEY,JSON.stringify(v))}catch(e){}}
-function clAvail(){return isPhone()&&!READ_ONLY_BUILD}
-function clOk(){var v=clState();return clAvail()&&!!v&&v.ok===true}
-/* the schedule: a temperature change whenever the plan has moved enough (and the plateau values are hit exactly) */
-function curveSteps(){var out=[],last=cv.st,lastT=-9,vari=Math.abs(cv.hi-cv.st)+Math.abs(cv.hi-cv.lo),minD=Math.max(8,Math.ceil(vari/12));
-  for(var t=1;t<=cv.c;t++){var T=Math.round(clamp(planAt(t),480,565)),reach=(T===cv.hi&&last!==cv.hi)||(T===cv.lo&&t>=cv.b&&last!==cv.lo);
-    if(T!==last&&t-lastT>=2&&(Math.abs(T-last)>=minD||reach)){out.push({t:t,T:T});last=T;lastT=t}}
-  return out.slice(0,14)}
-var TEST_MIN_PEAK=510;
-function curveNote(txt){var n=$('curveNote');if(!n)return;n.hidden=!txt;if(txt)n.textContent=txt}
-function curveUI(){var c=$('cstart');if(!c)return;var av=clAvail(),st=clState(),ok=av&&!!st&&st.ok===true,bad=av&&!!st&&st.ok===false,when='';
-  try{when=new Date(st.at).toLocaleDateString(undefined,{month:'short',day:'numeric'})}catch(e){}
-  $('clive').hidden=!av;$('cflat').hidden=!ok;$('ctest').textContent=ok||bad?'Test again':'Run the test';
-  $('cliveTxt').textContent=!av?'':ok?'On. Your Carta follows live changes'+(when?' (tested '+when+').':'.')
-    :bad?(st.why==='heat'?'Off. Your Carta’s reading followed the change, but its last reading ('+st.end+'°F) says the heat did not, so Start holds one temperature.'
-      :'Off. Your Carta ignored the test change, so Start holds one temperature.')
-    :'Needs a one-time test on your Carta. Until then Start holds one temperature.';
-  c.textContent=ok?'Start curve · '+cv.c+'s':(okT(cv.hi)&&okD(cv.c)?'Start at '+cv.hi+'°F · '+cv.c+'s':'Start session')}
-function curveRun(mode){
-  if(!clAvail())return toast('Live curves are on the phone page');
-  if(!okT(cv.hi)||!okT(cv.lo)||!okT(cv.st))return toast(T_MSG+'.');
-  if(!okD(cv.c))return toast(D_MSG+' — this curve ends at '+cv.c+' s. Drag the last dot to 20 s or later.');
-  if(mode==='test'&&cv.c<35)return toast('The test needs a session of at least 35 s. Drag the last dot to 35 s or later.');
-  if(live.sess!=='IDLE')return toast('A session is already running');
-  if(!devLive()||!(live.on&&live.connected))return toast('Connect to your Carta first');
-  if(startLocked())return toast(START_LOCK_MSG);   /* nothing is written while Start is locked */
-  if(mode==='test'&&cv.hi<TEST_MIN_PEAK)return toast('For the test, set Peak to '+TEST_MIN_PEAK+'°F or higher. The test drops to 480°F, and a smaller drop is too small to tell.');
-  var before=dev.status?{temp:dev.status.conc_custom_temp,preset:dev.status.conc_preset}:null;   /* what your button was set to before this run touched it */
-  var steps=mode==='test'?[{t:6,T:480}]:curveSteps();   /* the test only ever LOWERS the temperature, to the lowest allowed one: never hotter than the Peak you chose, and big enough to tell */
-  if(!steps.length)return toast('This curve has no temperature changes to make. Use Start flat.');
-  temp=mode==='test'?cv.hi:cv.st;tempSet=true;setLen(cv.c);          // the curve starts where the plan starts: your Start temperature
-  runSteps(heatSteps(),0,function(){cRun={mode:mode,steps:steps,i:0,sent:0,busy:false,armed:Date.now(),started:false,sentAt:null,t0:null,ev:false,err:null,hold:mode==='test'?cv.hi:cv.st,lag:null,before:before};
-    curveNote(mode==='test'?'Live-change test: waiting for Ready…':'Curve: waiting for Ready…');startConfirmed()})}
-function curveLine(r,t){var n=r.steps[r.i];
-  if(r.mode==='test')return r.sent?(r.ev&&r.moved?'Live-change test: the reading followed. Your Carta’s last reading at the end of the session decides whether the heat did.':'Live-change test: change sent, watching whether your Carta follows…'):'Live-change test: one change goes out '+Math.max(0,n.t-t)+' s from now.';
-  return 'Curve running · '+r.sent+' of '+r.steps.length+' changes sent'+(n?' · next: '+n.T+'°F at '+n.t+' s':'')}
-function curveOnStart(){var c=$('ccap');if(c)c.hidden=true;var rb=$('crestore');if(rb)rb.hidden=true;if(cRun&&!cRun.started&&Date.now()-cRun.armed<120000)cRun.started=true;else if(cRun&&!cRun.started)cRun=null}
-function curveTick(){var r=cRun;if(!r)return;if(!r.started){if(Date.now()-r.armed>120000)cRun=null;return}
-  var s=live.st;if(!s||live.sess!=='READY'||r.err)return;var t=live.dur-s.remaining;
-  curveEval(false);if(r.busy)return;
-  var st=r.steps[r.i];if(!st||t<st.t)return curveNote(curveLine(r,t));
-  r.busy=true;var T0=s.temp;
-  api('/api/live/curve-step',{temp:st.T}).then(function(o){r.busy=false;if(cRun!==r)return;
-    if(!o.ok)return curveAbort(o.error||'the change was refused');
-    r.i++;r.sent++;if(r.mode==='test'){r.sentAt=t;r.t0=T0}curveNote(curveLine(r,t))})}
-function curveAbort(msg){var r=cRun;if(!r||r.err)return;r.err=msg;curveNote('Curve stopped: '+msg+' Your Carta keeps its last temperature. Cancel any time.');toast('Curve stopped')}
-/* did the Carta follow the ONE test change? it must move >= 8 °F toward it within 20 s of its own countdown */
-function curveEval(final){var r=cRun;if(!r||r.mode!=='test'||r.ev||r.sentAt==null)return;
-  var pts=cTrace.filter(function(p){return p.t>=r.sentAt&&p.t<=r.sentAt+20});
-  if(!final&&(!pts.length||pts[pts.length-1].t<r.sentAt+20))return;
-  var tgt=r.steps[0].T,T0=r.t0,moved=pts.some(function(p){return tgt<T0?p.T<=T0-8:p.T>=T0+8});
-  r.ev=true;var near=pts.filter(function(p){return Math.abs(p.T-tgt)<=2})[0];r.lag=near?Math.max(0,near.t-r.sentAt):null;
-  if(pts.length<4&&!moved){curveNote('Test inconclusive: the session ended too soon. Run it again.');toast('Test inconclusive');return}
-  r.moved=moved;
-  if(!moved)return curveVerdict(r);   /* the reading ignored it: decided now */
-}
-/* After READY the Carta's reading is just the temperature it is set to (flat in every session we recorded), so a reading that follows the change does NOT prove the heat did.
-   Its LAST reading (the frame where its countdown hits 0) is the first real one: in a normal session it is a few degrees under the set temperature and then falls. */
-function curveEnd(){var p=cTrace[cTrace.length-1];return p&&live.dur&&p.t>=live.dur?p.T:null}
-function curveVerdict(r){if(r.done||r.moved===undefined)return;r.done=true;var tgt=r.steps[0].T,T0=r.t0,E=curveEnd();r.end=E;
-  if(!r.moved){clSave({ok:false,why:'reading',at:Date.now(),from:T0,to:tgt});curveUI();
-    curveNote('Test result: your Carta ignored the change (it stayed near '+T0+'°F). Curves can’t change the heat on this Carta.');toast('Your Carta ignored the live change');return}
-  if(E==null){curveNote('Test inconclusive: no last reading at the end of the session. Run it again.');toast('Test inconclusive');return}
-  var heat=E<=tgt+12;clSave({ok:heat,why:heat?'':'heat',at:Date.now(),from:T0,to:tgt,end:E});curveUI();
-  curveNote(heat?'Test passed: the reading moved from '+T0+'°F to '+tgt+'°F and your Carta’s last reading was '+E+'°F, in line with it. Live curves are unlocked.'
-    :'Test result: the reading moved to '+tgt+'°F, but your Carta’s last reading was '+E+'°F, well above that. The heat does not look like it followed, so curves stay off and Start holds one temperature.');
-  toast(heat?'Live curves unlocked':'The heat did not follow the change')}
-function curveOnEnd(){var r=cRun;if(!r)return;if(r.mode==='test'&&!r.ev)curveEval(true);if(r.mode==='test')curveVerdict(r);r.end=curveEnd();
-  var last=r.steps.length&&r.sent?r.steps[Math.min(r.sent,r.steps.length)-1].T:null;
-  if(r.mode==='curve')curveNote((r.err?'Curve stopped early. ':'Curve finished. ')+r.sent+' of '+r.steps.length+' changes sent'+(last?'; your button now uses '+last+'°F.':'.')+(r.end!=null?' Its last reading was '+r.end+'°F.':''));
-  curveCaptionLater(r);cRun=null;curveUI()}
-/* after a session: say what it was, and read back what your button's temperature is now (never assume) */
-function curveCaptionLater(r){setTimeout(function(){var c=$('ccap'),s=dev.status,now=s&&s.conc_custom_temp,txt='';if(!c)return;
-  var stored=now==null?'':(r.mode==='test'&&now===r.hold?' Your button is back at '+now+'°F, so the change applied to that session only.':' Your button now uses '+now+'°F.');
-  if(r.mode==='test'){if(r.sentAt==null)return;txt='That was the one-change test, not your curve: it held '+r.hold+'°F, then changed to '+r.steps[0].T+'°F at '+r.sentAt+' s. Your Carta’s reading '+(r.lag==null?'did not settle on the new value':(r.lag<=1?'followed straight away':'followed within '+r.lag+' s'))+'.'+(r.end!=null?' At the very end it reported '+r.end+'°F.':'')+stored}
-  else{if(!r.sent)return;txt='Curve run: '+r.sent+' of '+r.steps.length+' temperature changes went out.'+stored}
-  c.textContent=txt;c.hidden=false;
-  var rb=$('crestore'),b=r.before;   /* one tap puts your button's temperature back (a normal idle temperature store, same as Heat → Set) */
-  if(b&&b.preset===0&&now!=null&&now!==b.temp&&dev.status&&dev.status.idle){rb.textContent='Put my button back to '+b.temp+'°F';rb.onclick=function(){rb.hidden=true;prepare({action:'heat',temp:b.temp},'Set '+b.temp+'°F on your Carta?',{})};rb.hidden=false}
-  else if(b&&b.preset>0&&now!=null){c.textContent+=' (Before this, your button was on preset '+b.preset+'; choose it again on your Carta.)'}
-  },1800)}
-$('cstart').onclick=function(){if(clOk())curveRun('curve');else curveStartFlat()};
-$('cflat').onclick=function(){curveStartFlat()};
-$('ctest').onclick=function(){curveRun('test')};   /* curveUI() runs on every curve redraw (curveBtn), after the curve data exists */
-
-/* ---- simple controls: a shape for a quick start, then three stages you can fine-tune: Ramp up (Start -> Peak, N s), Hold (at Peak, N s), Ease off (-> End, N s).
-   The whole curve is their sum and must stay 20-120 s. No dragging; the chart is a picture of the result. ---- */
-var CS={shape:'Fade',st:480,hi:535,end:500,endAuto:true,ramp:10,hold:30,ease:15};
-var SHAPE_DEF={Steady:{a:.10,b:.90,drop:0},Ascent:{a:.70,b:.90,drop:0},Fade:{a:.18,b:.73,drop:35},Hill:{a:.40,b:.60,drop:45},Flash:{a:.075,b:.75,drop:45}};
-function csTotal(){return CS.ramp+CS.hold+CS.ease}
-function shapeTimes(n,len){var d=SHAPE_DEF[n],a=Math.max(2,Math.round(d.a*len)),b=Math.max(a+2,Math.round(d.b*len));if(b>len-1)b=len-1;return {a:a,b:b}}
-function curveApply(){if(CS.endAuto&&CS.shape)CS.end=clamp(CS.hi-SHAPE_DEF[CS.shape].drop,480,565);   /* End follows the shape's Peak until you set it yourself */
-  var c=csTotal();cv.a=CS.ramp;cv.b=CS.ramp+CS.hold;cv.c=c;cv.st=CS.st;cv.hi=CS.hi;cv.lo=CS.end;CXM=Math.max(60,Math.ceil(c/10)*10);drawCurve()}
-function pickShape(n){var total=csTotal(),t=shapeTimes(n,total);CS.shape=n;CS.endAuto=true;CS.ramp=t.a;CS.hold=t.b-t.a;CS.ease=total-t.b;curveApply()}   /* keeps your total length, Start and Peak */
-function shapePath(n){var t=shapeTimes(n,55),d=SHAPE_DEF[n],lo=clamp(535-d.drop,480,565),P=[[0,480],[t.a,535],[t.b,535],[55,lo]],X=function(x){return 2+x/55*60},Y=function(T){return 25-(T-480)/85*22};
-  return P.map(function(p,i){return(i?'L':'M')+X(p[0]).toFixed(1)+' '+Y(p[1]).toFixed(1)}).join('')}
-function curveSimpleInit(){var box=$('cpre');box.innerHTML='';
-  Object.keys(SHAPE_DEF).forEach(function(n){var b=document.createElement('button');b.className='chip shp'+(n===CS.shape?' on':'');
-    b.innerHTML='<svg viewBox="0 0 64 28" aria-hidden="true"><path class="fa" d="'+shapePath(n)+'L62 27L2 27Z"/><path class="ln" d="'+shapePath(n)+'"/></svg><span></span>';b.querySelector('span').textContent=n;
-    b.onclick=function(){pickShape(n);vib(6)};box.appendChild(b)});
-  curveSimpleSync()}
-function curveSimpleSync(){if(!$('cpkV'))return;
-  $('cstV').textContent=CS.st+'°F';$('cpkV').textContent=CS.hi+'°F';$('cedV').textContent=CS.end+'°F';$('crmV').textContent=CS.ramp+' s';$('chdV').textContent=CS.hold+' s';$('cesV').textContent=CS.ease+' s';
-  Array.prototype.forEach.call(document.querySelectorAll('#cpre .shp'),function(b){b.classList.toggle('on',!!CS.shape&&b.querySelector('span').textContent===CS.shape)});
-  $('csum').innerHTML='<b>'+cv.st+'°</b> → <b>'+cv.hi+'°</b> → <b>'+cv.lo+'°</b>';
-  $('ctotal').innerHTML='<b>'+CS.ramp+' s</b> + <b>'+CS.hold+' s</b> + <b>'+CS.ease+' s</b> = <b>'+csTotal()+' s</b> in all';
-  drawLabels()}
-/* softly rounded corners where the plan changes direction (the straight stretches stay exactly as planned), plus a gentle glow under the line */
-function roundD(P,r){var Q=[P[0]];for(var i=1;i<P.length;i++)if(Math.hypot(P[i][0]-Q[Q.length-1][0],P[i][1]-Q[Q.length-1][1])>0.5)Q.push(P[i]);
-  var d='M'+Q[0][0]+' '+Q[0][1];
-  for(var i=1;i<Q.length-1;i++){var p0=Q[i-1],p1=Q[i],p2=Q[i+1],l1=Math.hypot(p1[0]-p0[0],p1[1]-p0[1]),l2=Math.hypot(p2[0]-p1[0],p2[1]-p1[1]),k=Math.min(r,l1/2,l2/2);
-    d+='L'+(p1[0]-(p1[0]-p0[0])/l1*k)+' '+(p1[1]-(p1[1]-p0[1])/l1*k)+'Q'+p1[0]+' '+p1[1]+' '+(p1[0]+(p2[0]-p1[0])/l2*k)+' '+(p1[1]+(p2[1]-p1[1])/l2*k)}
-  var e=Q[Q.length-1];return d+'L'+e[0]+' '+e[1]}
-function softenChart(sv){var area=sv.querySelector('path'),line=sv.querySelector('path[stroke="#ff9a5c"]:not(#cglow)');if(!area||!line)return;   /* the plan's own fill and line, never the glow or the actual-temperature trace */
-  var P=[[cx(0),cy(cv.st)],[cx(cv.a),cy(cv.hi)],[cx(cv.b),cy(cv.hi)],[cx(cv.c),cy(cv.lo)],[cx(CXM),cy(cv.lo)]],d=roundD(P,11),base=PY+TH;
-  line.setAttribute('d',d);area.setAttribute('d',d+'L'+cx(CXM)+' '+base+'L'+cx(0)+' '+base+'Z');
-  var old=sv.querySelector('#cglow');if(old)old.remove();
-  line.insertAdjacentHTML('beforebegin','<path id="cglow" d="'+d+'" fill="none" stroke="#ff9a5c" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" opacity=".28" filter="url(#blur)" style="pointer-events:none"/>')}
-function drawLabels(){var sv=$('csvg');if(!sv)return;var old=sv.querySelector('#clab');if(old)old.remove();softenChart(sv);
-  Array.prototype.forEach.call(sv.querySelectorAll('text'),function(t){if(/^\d+s$/.test(t.textContent))t.remove()});   /* the design's fixed 0/30/60 s axis: replaced by the curve's own times */
-  var g='<g id="clab" style="pointer-events:none" font-size="11.5" fill="#f4f1ec" font-weight="500"><circle cx="'+cx(0)+'" cy="'+cy(cv.st)+'" r="4.5" fill="#f4f1ec" stroke="#d9622a" stroke-width="2.5"/>'
-   +'<text x="'+(cx(0)+8)+'" y="'+(cy(cv.st)+(cv.st>=cv.hi-6?18:-9))+'" text-anchor="start">'+cv.st+'°</text>'
-   +'<text x="'+cx((cv.a+cv.b)/2)+'" y="'+(cy(cv.hi)-13)+'" text-anchor="middle">'+cv.hi+'°</text>'
-   +'<text x="'+cx(cv.c)+'" y="'+(cy(cv.lo)+(cv.lo<=cv.hi?19:-13))+'" text-anchor="middle">'+cv.lo+'°</text>';
-  var ticks=[[cv.c,cv.c+'s'],[0,'0s'],[cv.a,cv.a+'s'],[cv.b,cv.b+'s']],kept=[];   /* time marks along the bottom: the end and 0 always, the other two only if they would not touch */
-  g+='<g font-size="10" fill="#8f8b84" font-weight="400">';ticks.forEach(function(t){var x=cx(t[0]);if(kept.every(function(k){return Math.abs(k-x)>30})){kept.push(x);g+='<text x="'+x+'" y="'+(CH-4)+'" text-anchor="middle">'+t[1]+'</text>'}});g+='</g>';
-  sv.insertAdjacentHTML('beforeend',g+'</g>')}
-function csFail(msg){toast(msg);return false}
-function cstepBy(kind,d){   /* out of range: a message that says why, never a silent change */
-  var temps={st:'st',pk:'hi',ed:'end'},times={rm:'ramp',hd:'hold',es:'ease'};
-  if(temps[kind]){var key=temps[kind],v=CS[key]+d;if(v<480||v>565)return csFail(v>565?'565°F is the highest':'480°F is the lowest');
-    CS[key]=v;if(kind==='ed')CS.endAuto=false}
-  else{var k=times[kind],n=CS[k]+d,min=k==='hold'?0:1,tot=csTotal()+d;
-    if(n<min)return csFail((k==='ramp'?'Ramp up':k==='ease'?'Ease off':'Hold')+' can’t be shorter than '+min+' s');
-    if(tot>120)return csFail('The whole curve can’t be longer than 120 s');
-    if(tot<20)return csFail('The whole curve must be at least 20 s');
-    CS[k]=n;CS.shape=null;CS.endAuto=false}   /* changing a time makes it your own curve: no shape stays selected */
-  curveApply()}
-function holdBtn(id,fn){var b=$(id),t0=null,iv=null;function stop(){clearTimeout(t0);clearInterval(iv);t0=iv=null}
-  b.addEventListener('pointerdown',function(e){if(e.pointerType==='mouse'&&e.button!==0)return;fn();t0=setTimeout(function(){iv=setInterval(fn,85)},380)});
-  ['pointerup','pointerleave','pointercancel'].forEach(function(ev){b.addEventListener(ev,stop)});
-  b.addEventListener('click',function(e){if(e.detail===0)fn()})}   /* a real tap already fired on pointerdown; keyboard / programmatic clicks have detail 0 */
-[['cstM','st',-1],['cstP','st',1],['cpkM','pk',-1],['cpkP','pk',1],['cedM','ed',-1],['cedP','ed',1],['crmM','rm',-1],['crmP','rm',1],['chdM','hd',-1],['chdP','hd',1],['cesM','es',-1],['cesP','es',1]]
-  .forEach(function(x){holdBtn(x[0],function(){cstepBy(x[1],x[2])})});
 
 /* session: live view of the real Carta. Watching is read-only. The only two in-session actions are
    Cancel (one tap, while a session runs) and Start (three deliberate taps + approval code, idle only). */
@@ -1360,7 +1067,7 @@ function mmss(s){s=Math.max(0,s|0);return Math.floor(s/60)+':'+('0'+s%60).slice(
 var live={es:null,on:false,want:false,connected:false,sess:'IDLE',dur:60,st:null,name:'',tries:0,retry:null,cancelling:false,cancelled:false,byApp:false,dismissed:false};
 /* session takeover: the session view opens full screen by itself when a session starts (or when you connect while one is
    running), stays closed for the rest of that session once you tap ✕, and closes by itself when the Carta goes idle */
-var sessOpen=false,sessCloseT=null,cTrace=[];   /* cTrace: {t: seconds since READY (the Carta's own countdown), T: its reported temperature} */
+var sessOpen=false,sessCloseT=null;
 function openSess(){if(live.dismissed||sessOpen)return;clearTimeout(sessCloseT);sessCloseT=null;$('s-sess').classList.add('on');sessOpen=true;updateAmb();sessButtons()}
 function closeSess(byUser){clearTimeout(sessCloseT);sessCloseT=null;$('s-sess').classList.remove('on');sessOpen=false;if(byUser&&live.sess!=='IDLE')live.dismissed=true;updateAmb();sessButtons()}
 function closeSessSoon(){if(sessCloseT)return;sessCloseT=setTimeout(function(){sessCloseT=null;if(live.sess==='IDLE')closeSess(false)},2500)}   /* idle: close after 2.5 s */
@@ -1402,14 +1109,12 @@ function heatNow(s){var run=live.sess!=='IDLE'&&live.connected;$('hnowBox').hidd
   var d=hPrev==null?0:s.temp-hPrev;if(d!==0){live.trend=d>0?1:-1}if(hPrev==null)live.trend=0;hPrev=s.temp;
   $('hnowD').textContent=live.trend>0?'▲':live.trend<0?'▼':'';$('hnowS').textContent='Reported by your Carta'+(live.trend>0?' · rising':live.trend<0?' · falling':' · steady')}
 function onStatus(s){if(!s)return;live.st=s;lsInfo();heatNow(s);
-  if(live.sess==='READY'){var tt=live.dur-s.remaining;if(tt>=0&&(!cTrace.length||cTrace[cTrace.length-1].t!==tt))cTrace.push({t:tt,T:s.temp})}
-  if(typeof curveGauge==='function')curveGauge();if(typeof curveTick==='function')curveTick();
   if(live.sess==='READY'){$('rtime').textContent=mmss(s.remaining);$('rsub').textContent='left';
     var fr=clamp(1-s.remaining/live.dur,0,1);[$('pr'),$('pg')].forEach(function(x){x.setAttribute('stroke-dashoffset',CIRC*fr)})}
   else{$('rtime').textContent=s.temp;$('rsub').textContent='°'+s.unit+' now'}
   sessButtons()}
 function onSession(state,s){var prev=live.sess;live.sess=state;
-  if(state==='HEATING'&&prev!=='HEATING'){if(prev==='IDLE'){logStart(live.byApp?'app':'button');cTrace=[];if(typeof curveOnStart==='function')curveOnStart()}live.byApp=false;openSess();
+  if(state==='HEATING'&&prev!=='HEATING'){if(prev==='IDLE'){logStart(live.byApp?'app':'button')}live.byApp=false;openSess();
     setPhase('heat');$('sstate').classList.remove('lost');$('sstate').textContent='Heating';
     $('smsg').textContent='Your Carta shows its own heat lights now. This screen pulses red until it is ready.'}
   else if(state==='READY'&&prev!=='READY'){live.dur=Math.max(1,(s&&s.remaining)||live.dur);logReady(s);openSess();setPhase('ready');$('sstate').textContent='Ready to hit';
@@ -1417,11 +1122,11 @@ function onSession(state,s){var prev=live.sess;live.sess=state;
     ['flash','rip'].forEach(function(id){var f=$(id);f.classList.remove('go');void f.offsetWidth;f.classList.add('go')});
     if(vOn)vib([200,80,200]);if(sOn)chime();
     setTimeout(function(){if(live.sess==='READY'&&phaseNow==='ready')setPhase('run')},1400)}
-  else if(state==='IDLE'&&prev!=='IDLE'){var c=live.cancelled;live.cancelled=false;live.dismissed=false;closeSessSoon();if(typeof curveOnEnd==='function')curveOnEnd();
+  else if(state==='IDLE'&&prev!=='IDLE'){var c=live.cancelled;live.cancelled=false;live.dismissed=false;closeSessSoon();
     logEnd(c?'cancelled':(prev==='READY'?'finished':'ended before ready'));
     lsIdle(c?'Cancelled. The heater is off.':(prev==='READY'?'Session finished. Nothing is heating.':'The session ended before it was ready.'))}
   onStatus(s);sessButtons()}
-function lost(msg){if(typeof curveAbort==='function')curveAbort('the connection was lost.');phoneDrop(msg);live.connected=false;
+function lost(msg){phoneDrop(msg);live.connected=false;
   if(isPhone()&&!ph.dev){   /* never connected (no Carta chosen / no Bluetooth): say so plainly, don't claim a lost link, don't retry without a tap */
     live.want=false;live.on=false;live.tries=0;clearTimeout(live.retry);if(live.es){live.es.close();live.es=null}keepAwake(false);
     lsChip('Not watching');$('watchBtn').disabled=false;$('watchBtn').textContent='Watch live';lsIdle(msg);toast(msg);return}$('hnowBox').hidden=true;hPrev=null;if(live.es){live.es.close();live.es=null}
@@ -1475,7 +1180,7 @@ $('startBtn').onclick=function(){if(live.sess!=='IDLE')return;if(!startReady())r
   $('ssheet').classList.add('on')};
 $('sabort').onclick=function(){$('ssheet').classList.remove('on')};
 $('sconfirm').onclick=function(){$('ssheet').classList.remove('on');if(isPhone())heatGo();else startConfirmed()};
-function heatGo(){runSteps(heatSteps(),0,startConfirmed)}   /* temperature, then length (each only if it differs), then Start: the same chain the Curve Start uses */
+function heatGo(){runSteps(heatSteps(),0,startConfirmed)}   /* temperature, then length (each only if it differs), then Start */
 function startConfirmed(){var d=userDur;
   api('/api/live/prepare-start',{temp:temp,duration:d}).then(function(o){
     if(!o.ok){$('smsg').textContent='Not started: '+o.error;return toast(o.error)}
@@ -1531,29 +1236,6 @@ function renderLog(){var a=loadLog(),now=new Date(),D=86400000,day0=new Date(now
 $('watchBtn').onclick=watch;
 lsIdle(HINT);sndUI();
 
-/* curve editor */
-var cv={a:10,b:40,c:55,lo:500,hi:535,st:480};
-var CW=350,CH=220,PX=46,PR=22,PY=22,TW=CW-PX-PR,TH=CH-2*PY-16;
-var CXM=60;function cx(t){return PX+t/CXM*TW}function cy(T){return PY+(1-(T-480)/85)*TH}
-function drawCurve(){
-  var pts=[[0,cv.st],[cv.a,cv.hi],[cv.b,cv.hi],[cv.c,cv.lo],[CXM,cv.lo]];
-  var d=pts.map(function(p,i){return(i?'L':'M')+cx(p[0])+' '+cy(p[1])}).join('');
-  var h='<defs><linearGradient id="ca" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff8a4c" stop-opacity=".35"/><stop offset="1" stop-color="#ff8a4c" stop-opacity="0"/></linearGradient></defs>';
-  [480,515,565].forEach(function(T){h+='<line x1="'+PX+'" x2="'+(CW-PR)+'" y1="'+cy(T)+'" y2="'+cy(T)+'" stroke="rgba(255,255,255,.09)"/><text x="6" y="'+(cy(T)+3.5)+'" fill="#8f8b84" font-size="10">'+T+'°</text>'});
-  h+='<path d="'+d+'L'+cx(CXM)+' '+(PY+TH)+'L'+cx(0)+' '+(PY+TH)+'Z" fill="url(#ca)"/><path d="'+d+'" fill="none" stroke="#ff9a5c" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>';
-  [['a',cv.a,cv.hi],['b',cv.b,cv.hi],['c',cv.c,cv.lo]].forEach(function(p){h+='<circle data-k="'+p[0]+'" cx="'+cx(p[1])+'" cy="'+cy(p[2])+'" r="5" fill="#f4f1ec" stroke="#d9622a" stroke-width="2.5" style="pointer-events:none"/>'});
-  h+='<text x="'+PX+'" y="'+(CH-4)+'" fill="#8f8b84" font-size="10">0s</text><text x="'+(PX+TW/2-8)+'" y="'+(CH-4)+'" fill="#8f8b84" font-size="10">'+(CXM/2)+'s</text><text x="'+(CW-PR-14)+'" y="'+(CH-4)+'" fill="#8f8b84" font-size="10">'+CXM+'s</text>';
-  $('csvg').innerHTML=h;
-  $('c1t').textContent='0–'+cv.a+' s\n'+((cv.hi-cv.st)/Math.max(1,cv.a)).toFixed(1)+'°F/s';$('c1v').textContent=cv.hi+'°F';$('c2t').textContent=cv.a+'–'+cv.b+' s';$('c2v').textContent=cv.hi+'°F';$('c3t').textContent=cv.b+'–'+cv.c+' s';$('c3v').textContent=cv.lo+'°F';if(typeof curveBtn==='function')curveBtn();
-}
-var dk=null;
-$('cb').addEventListener('pointerdown',function(e){var k=e.target.getAttribute&&e.target.getAttribute('data-k');if(k){dk=k;$('cb').setPointerCapture(e.pointerId)}});
-$('cb').addEventListener('pointermove',function(e){if(!dk)return;var r=$('csvg').getBoundingClientRect(),sc=350/r.width,x=(e.clientX-r.left)*sc,y=(e.clientY-r.top)*sc;
-  var t=clamp(Math.round((x-PX)/TW*60),2,58),T=clamp(Math.round(480+(1-(y-PY)/TH)*85),480,565);
-  if(dk==='a'){cv.a=clamp(t,2,cv.b-2);cv.hi=T}else if(dk==='b'){cv.b=clamp(t,cv.a+2,cv.c-2)}else{cv.c=clamp(t,cv.b+2,58);cv.lo=T}drawCurve()});
-$('cb').addEventListener('pointerup',function(){dk=null});
-$('csave').onclick=saveCurvePreset;
-drawCurve();
 
 /* log: real sessions from this device (renderLog, session block) */
 
@@ -1568,15 +1250,6 @@ $('ttl').addEventListener('pointerdown',function(){lp=setTimeout(function(){$('s
 $('sclose').onclick=function(){$('sheet').classList.remove('on')};
 
 
-/* curve shapes + share codes */
-var SHAPES={Steady:{a:6,b:50,c:56,hi:515,lo:515},Ascent:{a:40,b:50,c:56,hi:545,lo:545},Descent:{a:4,b:8,c:58,hi:555,lo:495},Hill:{a:24,b:34,c:58,hi:545,lo:500},Flash:{a:3,b:30,c:40,hi:565,lo:520}};
-curveSimpleInit();
-function curveCode(){return 'CARTA-'+btoa(JSON.stringify([cv.a,cv.b,cv.c,cv.lo,cv.hi])).replace(/=+$/,'')}
-$('cshare').onclick=function(){var c=curveCode();$('ccode').value=c;
-  try{navigator.clipboard.writeText(c).then(function(){toast('Code copied')},function(){toast('Code ready. Select and copy it.')})}catch(e){toast('Code ready. Select and copy it.')}};
-$('capply').onclick=function(){try{var v=JSON.parse(atob($('ccode').value.trim().replace(/^CARTA-/,'')));
-  var ok=Array.isArray(v)&&v.length===5&&v.every(function(n){return typeof n==='number'&&isFinite(n)})&&v[0]>=1&&v[0]<v[1]&&v[1]<v[2]&&v[2]<=59&&v[3]>=480&&v[3]<=565&&v[4]>=480&&v[4]<=565;
-  if(ok){cv.a=v[0];cv.b=v[1];cv.c=v[2];cv.lo=v[3];cv.hi=v[4];drawCurve();toast('Curve loaded')}else toast('That code is outside the safe range')}catch(e){toast('That code is not valid')}};
 /* colors from a photo: sets the pending color only (other picks are offered as swatches); never sends */
 $('photoBtn').onclick=function(){$('photo').click()};
 $('photo').onchange=function(){var f=this.files&&this.files[0];if(!f)return;var im=new Image(),u=URL.createObjectURL(f);
@@ -1670,6 +1343,6 @@ syncFs();
 /* the Focus V browser's own page re-applies its saved choice on load; do the same when that hook exists */
 try{if(wantFull()&&!fsOn&&typeof window.requestFullscreen==='function'){browserFullscreen(true);recheck()}}catch(e){}
 
-setPhase('idle');drawDial();placeKnob();refreshUI();renderLog();renderCurvePresets();show('heat');requestAnimationFrame(paint);
+setPhase('idle');drawDial();placeKnob();refreshUI();renderLog();renderUserPresets();show('heat');requestAnimationFrame(paint);
 })();
 </script>
