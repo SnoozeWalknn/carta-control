@@ -184,7 +184,6 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;bac
 .aplines{display:flex;flex-direction:column;gap:6px;font-size:15px;color:var(--fg);line-height:1.4}.aplines div:last-child{color:var(--mut);font-size:13px}
 .apsw{display:flex;gap:6px}.apsw i{flex:1;height:22px;border-radius:8px;box-shadow:inset 0 0 0 1px #ffffff18}
 .apdet{font-size:12px;color:var(--mut)}.apdet summary{padding:8px 0;cursor:pointer}.apdet[open] summary{margin-bottom:8px}.apdet .glass,.apdet .note{margin-bottom:8px}
-#pats{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}#pats .chip{padding:0 2px;letter-spacing:.08em;font-size:10.5px;text-align:center;justify-content:center}
 .looks{display:block}
 .lrow{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x proximity;scroll-padding-left:22px;scroll-padding-right:22px;margin:0 -22px 10px;padding:2px 22px 8px;scrollbar-width:none}   /* scroll-padding: iPhone snaps to the row's edge, not its padding, which pushed the first card flush left */.lrow::-webkit-scrollbar{display:none}
 .lrow .look{flex:none;width:150px;scroll-snap-align:start}
@@ -192,6 +191,26 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;bac
 .look.on{border-color:rgba(255,178,122,.6);box-shadow:inset 0 1px 0 var(--hi),0 0 0 1px rgba(255,178,122,.3)}
 .look b{display:block;height:12px;border-radius:7px;box-shadow:inset 0 0 0 1px #ffffff14}.look span{font-size:13.5px;font-weight:500}.look small{font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--mut)}
 .chip.warn{border-color:#ff3a2a;color:#ff8a7c}
+/* ===== Apple-style finish, whole app ===== */
+/* toast: a compact floating pill in frosted glass */
+.toast{left:50%;right:auto;bottom:104px;width:max-content;max-width:calc(100% - 40px);text-align:center;border-radius:22px;padding:12px 18px;font-size:14px;line-height:1.35;color:var(--fg);
+  background:rgba(40,40,45,.78);-webkit-backdrop-filter:blur(26px) saturate(1.5);backdrop-filter:blur(26px) saturate(1.5);border:1px solid rgba(255,255,255,.1);box-shadow:0 16px 44px rgba(0,0,0,.6);
+  transform:translate(-50%,12px) scale(.97);transition:opacity .25s,transform .5s cubic-bezier(.2,.9,.25,1.1)}
+.toast.on{transform:translate(-50%,0) scale(1)}
+/* sheets: grabber + frosted material */
+.sheet>div{position:relative;background:rgba(22,22,26,.94);-webkit-backdrop-filter:blur(34px) saturate(1.5);backdrop-filter:blur(34px) saturate(1.5);padding-top:32px;border-top:1px solid rgba(255,255,255,.1)}
+.sheet>div::before{content:"";position:absolute;top:9px;left:50%;width:38px;height:5px;margin-left:-19px;border-radius:3px;background:rgba(255,255,255,.22)}
+/* Heat: one clear primary action */
+#hactions{flex-direction:column;align-items:stretch;gap:6px!important}
+#hactions #hset{order:1;flex:none!important;width:100%;height:56px!important;min-height:56px;font-size:12px!important}
+#hactions:not(.connected) #hset{display:none}
+#hactions:not(.connected) #hconnect{width:100%;height:56px;font-size:12px;border-radius:20px}
+#hactions.connected #hconnect{order:2;align-self:center;border:0;background:none;box-shadow:none;color:var(--mut);padding:8px 14px;text-transform:none;letter-spacing:0;font-size:13.5px;font-weight:400}
+html.phoneui #watchBtn,html.phoneui #sessChip{display:none}   /* on the phone, Connect also watches; the top settings sheet has the Watch live switch */
+/* Light: pattern buttons as a segmented control */
+#pats{display:grid;grid-template-columns:repeat(5,1fr);gap:2px;padding:3px;border-radius:14px;background:rgba(255,255,255,.07);box-shadow:inset 0 1px 2px rgba(0,0,0,.35)}
+#pats .chip{height:38px;min-height:38px;border:0;border-radius:11px;background:none;box-shadow:none;color:var(--mut);padding:0 2px;letter-spacing:.04em;font-size:11px;text-transform:none;font-weight:500;justify-content:center;text-align:center;transition:background .2s,color .2s,box-shadow .2s}
+#pats .chip.on{background:rgba(255,255,255,.17);color:var(--fg);box-shadow:0 2px 10px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.12)}
 /* length control: centered group, unit inside the box */
 .lenrow{display:flex;flex-direction:column;align-items:center;gap:8px}
 .lenctl{display:flex;align-items:center;justify-content:center;gap:14px}
@@ -377,7 +396,7 @@ html.fs .tabs{left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(sa
     <div class="note" id="lenMsg" role="status" style="text-align:center;color:var(--acc)"></div>
     <div class="presets" id="presets"></div>
     <div class="note" id="hnow">Connect to set this on your Carta. Moving the dial never sends anything.</div>
-    <div class="row" style="flex-wrap:nowrap;gap:8px"><button class="chip" id="hconnect">Connect to Carta</button><button class="cta" id="hset" style="height:46px;font-size:11px;flex:1">Set 515°F on your Carta</button></div>
+    <div class="row" id="hactions" style="flex-wrap:nowrap;gap:8px"><button class="chip" id="hconnect">Connect to Carta</button><button class="cta" id="hset" style="height:46px;font-size:11px;flex:1">Set 515°F on your Carta</button></div>
     <div class="note" id="hundo"></div>
     <div class="row" id="hwatchRow" style="gap:8px;align-items:center"><button class="chip" id="watchBtn">Watch live</button><span class="chip-demo" id="sessChip" style="margin:0">Not watching</span><button class="chip" id="sndBtn2" hidden>Tap to enable sound</button><button class="chip" id="sessShow" hidden>Show session</button><button class="chip" id="cancel2" hidden>Cancel session</button></div>
     <div class="note" id="hlive">Watch live, and your session opens full screen as soon as it starts.</div>
@@ -702,7 +721,7 @@ function heatSync(){var c=devLive(),s=c?dev.status:null;
   $('st1').textContent='—';$('st2').textContent=userDur!=null&&!lenBad?userDur+'s':'—';$('dial').classList.toggle('unset',!tempSet)
   if(!$('hset'))return;
   $('heatDemo').hidden=c&&!READ_ONLY_BUILD;if(READ_ONLY_BUILD)$('heatDemo').textContent='Read-only test';
-  $('hconnect').disabled=typeof dev!=='undefined'&&!!dev&&dev.busy;$('hconnect').textContent=c?'Refresh status':'Connect to Carta';$('hconnect').classList.toggle('prime',!c);
+  $('hactions').classList.toggle('connected',c);$('hconnect').disabled=typeof dev!=='undefined'&&!!dev&&dev.busy;$('hconnect').textContent=c?'Refresh status':'Connect to Carta';$('hconnect').classList.toggle('prime',!c);
   if(activeUp&&(temp!==activeUp.t||userDur!==activeUp.d)){activeUp=null;pendLed=null}   /* moved away from the preset */
   var dch=c&&userDur!=null&&!lenBad&&userDur!==s.conc_custom_dur;
   $('hset').disabled=READ_ONLY_BUILD||!tempSet||lenBad||!(typeof dev!=='undefined'&&dev&&canWrite());
@@ -719,6 +738,7 @@ function done(o){dev.busy=false;
 function connect(){if(isPhone()&&!dev.connected&&typeof watch==='function'&&!live.want){busy('Connecting to your Carta… 10–60 s');return watch()}   /* phone: one tap = connected + watching */
   busy('Connecting to your Carta… 10–60 s');api('/api/prepare',{action:'status'}).then(function(o){if(done(o))toast('Connected · '+statusText())})}
 $('connectBtn').onclick=connect;
+if(isPhone())document.documentElement.classList.add('phoneui');
 function prepare(body,title,opts){opts=opts||{};
   if(!canWrite()){if(opts.stopped)opts.stopped();return toast(dev.connected?'Writes are off until your Carta is idle':'Connect to your Carta first')}
   lastPrep=body;lastOpts=opts;busy('Preparing… reading your Carta (10–60 s)');
