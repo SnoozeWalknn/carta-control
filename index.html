@@ -204,6 +204,7 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;bac
 #hactions{flex-direction:column;align-items:stretch;gap:6px!important}
 #hactions #hset{order:1;flex:none!important;width:100%;height:56px!important;min-height:56px;font-size:12px!important}
 #hactions:not(.connected) #hset{display:none}
+html.phoneui #hset,html.phoneui #hactions.connected,html.phoneui #hundo{display:none}   /* phone: no Set button and no Refresh status; Start is the only action (it applies your temperature and length first) */
 #hactions:not(.connected) #hconnect{width:100%;height:56px;font-size:12px;border-radius:20px}
 #hactions.connected #hconnect{order:2;align-self:center;border:0;background:none;box-shadow:none;color:var(--mut);padding:8px 14px;text-transform:none;letter-spacing:0;font-size:13.5px;font-weight:400}
 html.phoneui #watchBtn,html.phoneui #sessChip{display:none}   /* on the phone, Connect also watches; the top settings sheet has the Watch live switch */
@@ -396,7 +397,7 @@ html.fs .tabs{left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(sa
     <div id="lenRow" class="lenrow"><div class="lbl">Length</div><div class="lenctl"><button class="chip" id="lenM" aria-label="1 second shorter">−</button><div class="lenbox"><input class="inp" id="lenIn" type="number" min="20" max="120" step="1" inputmode="numeric" pattern="[0-9]*" enterkeyhint="done" placeholder="—" aria-label="Session length in seconds, 20 to 120"><span>s</span></div><button class="chip" id="lenP" aria-label="1 second longer">+</button></div></div>
     <div class="note" id="lenMsg" role="status" style="text-align:center;color:var(--acc)"></div>
     <div class="presets" id="presets"></div>
-    <div class="note" id="hnow">Connect to set this on your Carta. Moving the dial never sends anything.</div>
+    <div class="note" id="hnow">Connect to your Carta, then Start. Moving the dial never sends anything.</div>
     <div class="row" id="hactions" style="flex-wrap:nowrap;gap:8px"><button class="chip" id="hconnect">Connect to Carta</button><button class="cta" id="hset" style="height:46px;font-size:11px;flex:1">Set 515°F on your Carta</button></div>
     <div class="note" id="hundo"></div>
     <div class="row" id="hwatchRow" style="gap:8px;align-items:center"><button class="chip" id="watchBtn">Watch live</button><span class="chip-demo" id="sessChip" style="margin:0">Not watching</span><button class="chip" id="sndBtn2" hidden>Tap to enable sound</button><button class="chip" id="sessShow" hidden>Show session</button><button class="chip" id="cancel2" hidden>Cancel session</button></div>
@@ -731,7 +732,7 @@ function heatSync(){var c=devLive(),s=c?dev.status:null;
   $('hset').textContent=!tempSet?'Set a temperature first':lenBad?'Fix the length first':activeUp?'Apply “'+activeUp.n+'” to your Carta':'Set '+temp+'°F'+(dch?' · '+userDur+'s':'')+' on your Carta';
   $('hnow').textContent=(READ_ONLY_BUILD?'Read-only test build: Apply to Carta is off. Presets still load into the dial. ':'')+
     (c?'On your Carta now: '+(s.conc_preset?'preset '+s.conc_preset+' (your button)':'custom '+s.conc_custom_temp+'°F')+' · '+s.conc_custom_dur+'s'
-      :(READ_ONLY_BUILD?'':'Connect to set this on your Carta. Moving the dial never sends anything.'));
+      :(READ_ONLY_BUILD?'':'Connect to your Carta, then Start. Moving the dial never sends anything.'));
   if(typeof live!=='undefined'&&live)sessButtons()}
 function busy(msg){dev.busy=true;dev.warn=null;$('lstat').classList.remove('err');refreshUI();$('lstatTxt').textContent=msg}
 function done(o){dev.busy=false;
@@ -1464,12 +1465,17 @@ $('cancel').onclick=doCancel;$('cancel2').onclick=doCancel;
 
 /* Start: tap 1 opens the safety sheet, tap 2 confirms the chamber, tap 3 approves the exact frame. Idle only. */
 $('startBtn').onclick=function(){if(live.sess!=='IDLE')return;if(!startReady())return toast('Set your temperature and session length on the Heat tab first');
-  if(dev.status&&dev.status.conc_custom_dur!==userDur){$('smsg').textContent='Not started: your Carta stores '+dev.status.conc_custom_dur+' s but you chose '+userDur+' s. Tap “Set … on your Carta” first (its own approval), then Start.';return toast('Apply your length to the Carta first')}
-  if(!confirmOn())return startConfirmed();   /* phone default: the Start tap itself is the go (owner, 2026-10-07); the PC page / Confirm-on keeps the chamber-empty sheet */
+  if(isPhone()){   /* phone (owner, 2026-10-08): Start is the only button. One tap stores your temperature and length (only the ones your Carta doesn't have yet), then starts. Nothing is written while Start is locked. */
+    if(startLocked()){$('smsg').textContent='Not started: '+START_LOCK_MSG;return toast(START_LOCK_MSG)}
+    if(!devLive())return toast('Connect to your Carta first');
+    if(!confirmOn())return heatGo()}
+  else if(dev.status&&dev.status.conc_custom_dur!==userDur){$('smsg').textContent='Not started: your Carta stores '+dev.status.conc_custom_dur+' s but you chose '+userDur+' s. Tap “Set … on your Carta” first (its own approval), then Start.';return toast('Apply your length to the Carta first')}
+  if(!isPhone()&&!confirmOn())return startConfirmed();   /* phone default: the Start tap itself is the go (owner, 2026-10-07); the PC page / Confirm-on keeps the chamber-empty sheet */
   $('ssum').textContent='Heats to '+temp+'°F for a '+startDur()+' s session (your Heat settings). The session view opens with Cancel the moment it starts, and the button on your Carta stops it too.';
   $('ssheet').classList.add('on')};
 $('sabort').onclick=function(){$('ssheet').classList.remove('on')};
-$('sconfirm').onclick=function(){$('ssheet').classList.remove('on');startConfirmed()};
+$('sconfirm').onclick=function(){$('ssheet').classList.remove('on');if(isPhone())heatGo();else startConfirmed()};
+function heatGo(){runSteps(heatSteps(),0,startConfirmed)}   /* temperature, then length (each only if it differs), then Start: the same chain the Curve Start uses */
 function startConfirmed(){var d=userDur;
   api('/api/live/prepare-start',{temp:temp,duration:d}).then(function(o){
     if(!o.ok){$('smsg').textContent='Not started: '+o.error;return toast(o.error)}
