@@ -852,7 +852,7 @@ function phoneApi(path,body){body=body||{};
           return {ok:true,result:{ok:ok,frame:hx(f),before:hx(before),after:after?hx(after):null}}})}
     if(path==='/api/live/prepare-start'||path==='/api/live/start-session'){
       var why=function(s){if(!lsGet('carta.cancelVerified',null))return START_LOCK_MSG;
-        if(s[5]!==0)return 'A session is already running.';if((s[16]&15)===0)return 'Plug in your Carta first (sessions are supervised and plugged in).';
+        if(s[5]!==0)return 'A session is already running.';
         if(s[12]<20)return 'Battery is '+s[12]+' %. Charge above 20 % before starting from the app.';return null};
       if(path==='/api/live/prepare-start'){var w=why(st);if(w)refuse(w);var d=body.duration==null||body.duration===''?null:+body.duration,f=ccStart(st,+body.temp,d);checkFrame(f);
         return approvalCode(f,st).then(function(code){ph.prepStart={code:code,temp:+body.temp,dur:d};
