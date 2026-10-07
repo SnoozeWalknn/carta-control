@@ -458,6 +458,7 @@ html.fs .tabs{left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(sa
     <div class="glass curvebox" id="cb"><svg id="csvg" viewBox="0 0 350 220"></svg></div>
     <div class="cleg" id="cleg" hidden><span><i class="lp"></i>Your curve</span><span><i class="la"></i>What your Carta reported</span></div>
     <div class="ccap" id="ccap" hidden></div>
+    <button class="chip" id="crestore" hidden style="align-self:flex-start"></button>
     <div class="glass cgauge" id="cgauge" hidden>
       <div class="gcols"><div><span class="sl">Now</span><b id="gNow">--</b></div><div><span class="sl">Curve says</span><b id="gTarget">--</b></div><div><span class="sl">State</span><b id="gState">--</b></div></div>
       <div class="gbar"><i id="gFill"></i></div>
@@ -1196,15 +1197,16 @@ function curveRun(mode){
   if(live.sess!=='IDLE')return toast('A session is already running');
   if(!devLive()||!(live.on&&live.connected))return toast('Connect to your Carta first');
   if(startLocked())return toast(START_LOCK_MSG);   /* nothing is written while Start is locked */
+  var before=dev.status?{temp:dev.status.conc_custom_temp,preset:dev.status.conc_preset}:null;   /* what your button was set to before this run touched it */
   var steps=mode==='test'?[{t:6,T:cv.hi-20>=480?cv.hi-20:Math.min(565,cv.hi+20)}]:curveSteps();
   if(!steps.length)return toast('This curve has no temperature changes to make. Use Start flat.');
   temp=mode==='test'?cv.hi:cv.st;tempSet=true;setLen(cv.c);          // the curve starts where the plan starts: your Start temperature
-  runSteps(heatSteps(),0,function(){cRun={mode:mode,steps:steps,i:0,sent:0,busy:false,armed:Date.now(),started:false,sentAt:null,t0:null,ev:false,err:null,hold:mode==='test'?cv.hi:cv.st,lag:null};
+  runSteps(heatSteps(),0,function(){cRun={mode:mode,steps:steps,i:0,sent:0,busy:false,armed:Date.now(),started:false,sentAt:null,t0:null,ev:false,err:null,hold:mode==='test'?cv.hi:cv.st,lag:null,before:before};
     curveNote(mode==='test'?'Live-change test: waiting for Ready…':'Curve: waiting for Ready…');startConfirmed()})}
 function curveLine(r,t){var n=r.steps[r.i];
   if(r.mode==='test')return r.sent?'Live-change test: change sent, watching whether your Carta follows…':'Live-change test: one change goes out '+Math.max(0,n.t-t)+' s from now.';
   return 'Curve running · '+r.sent+' of '+r.steps.length+' changes sent'+(n?' · next: '+n.T+'°F at '+n.t+' s':'')}
-function curveOnStart(){var c=$('ccap');if(c)c.hidden=true;if(cRun&&!cRun.started&&Date.now()-cRun.armed<120000)cRun.started=true;else if(cRun&&!cRun.started)cRun=null}
+function curveOnStart(){var c=$('ccap');if(c)c.hidden=true;var rb=$('crestore');if(rb)rb.hidden=true;if(cRun&&!cRun.started&&Date.now()-cRun.armed<120000)cRun.started=true;else if(cRun&&!cRun.started)cRun=null}
 function curveTick(){var r=cRun;if(!r)return;if(!r.started){if(Date.now()-r.armed>120000)cRun=null;return}
   var s=live.st;if(!s||live.sess!=='READY'||r.err)return;var t=live.dur-s.remaining;
   curveEval(false);if(r.busy)return;
@@ -1233,7 +1235,11 @@ function curveCaptionLater(r){setTimeout(function(){var c=$('ccap'),s=dev.status
   var stored=now==null?'':(r.mode==='test'&&now===r.hold?' Your button is back at '+now+'°F, so the change applied to that session only.':' Your button now uses '+now+'°F (set your usual temperature on Heat if you want it back).');
   if(r.mode==='test'){if(r.sentAt==null)return;txt='That was the one-change test, not your curve: it held '+r.hold+'°F, then changed to '+r.steps[0].T+'°F at '+r.sentAt+' s. Your Carta’s reading '+(r.lag==null?'did not settle on the new value':(r.lag<=1?'followed straight away':'followed within '+r.lag+' s'))+'.'+stored}
   else{if(!r.sent)return;txt='Curve run: '+r.sent+' of '+r.steps.length+' temperature changes went out.'+stored}
-  c.textContent=txt;c.hidden=false},1800)}
+  c.textContent=txt;c.hidden=false;
+  var rb=$('crestore'),b=r.before;   /* one tap puts your button's temperature back (a normal idle temperature store, same as Heat → Set) */
+  if(b&&b.preset===0&&now!=null&&now!==b.temp&&dev.status&&dev.status.idle){rb.textContent='Put my button back to '+b.temp+'°F';rb.onclick=function(){rb.hidden=true;prepare({action:'heat',temp:b.temp},'Set '+b.temp+'°F on your Carta?',{})};rb.hidden=false}
+  else if(b&&b.preset>0&&now!=null){c.textContent+=' (Before this, your button was on preset '+b.preset+'; choose it again on your Carta.)'}
+  },1800)}
 $('cstart').onclick=function(){if(clOk())curveRun('curve');else curveStartFlat()};
 $('cflat').onclick=function(){curveStartFlat()};
 $('ctest').onclick=function(){curveRun('test')};   /* curveUI() runs on every curve redraw (curveBtn), after the curve data exists */
