@@ -185,7 +185,9 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;bac
 .apsw{display:flex;gap:6px}.apsw i{flex:1;height:22px;border-radius:8px;box-shadow:inset 0 0 0 1px #ffffff18}
 .apdet{font-size:12px;color:var(--mut)}.apdet summary{padding:8px 0;cursor:pointer}.apdet[open] summary{margin-bottom:8px}.apdet .glass,.apdet .note{margin-bottom:8px}
 #pats{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}#pats .chip{padding:0 2px;letter-spacing:.08em;font-size:10.5px;text-align:center;justify-content:center}
-.looks{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.looks{display:block}
+.lrow{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x proximity;margin:0 -22px 10px;padding:2px 22px 8px;scrollbar-width:none}.lrow::-webkit-scrollbar{display:none}
+.lrow .look{flex:none;width:150px;scroll-snap-align:start}
 .look{display:flex;flex-direction:column;gap:6px;padding:11px 12px;border-radius:18px;background:var(--glass);border:1px solid var(--bd);box-shadow:inset 0 1px 0 var(--hi);text-align:left;color:var(--fg);touch-action:manipulation}
 .look.on{border-color:rgba(255,178,122,.6);box-shadow:inset 0 1px 0 var(--hi),0 0 0 1px rgba(255,178,122,.3)}
 .look b{display:block;height:12px;border-radius:7px;box-shadow:inset 0 0 0 1px #ffffff14}.look span{font-size:13.5px;font-weight:500}.look small{font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--mut)}
@@ -212,7 +214,14 @@ input[type=color]{-webkit-appearance:none;appearance:none;width:46px;height:32px
 input[type=color]::-webkit-color-swatch-wrapper{padding:0}input[type=color]::-webkit-color-swatch{border:0;border-radius:10px}input[type=color]::-moz-color-swatch{border:0;border-radius:10px}
 .sheet>div{scrollbar-width:none}.sheet>div::-webkit-scrollbar{display:none}
 html,body{overscroll-behavior:none}
-.looksub{grid-column:1/-1;font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--mut);margin-top:4px}
+.looksub{font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--mut);margin:6px 0 8px}
+#looksNote{font-size:11.5px;line-height:1.5}
+/* the main action stays in reach: floats above the tab bar while you scroll the Light tab */
+#send{position:sticky;bottom:-22px;z-index:6;opacity:0;transform:translateY(18px);pointer-events:none;transition:opacity .25s,transform .25s;box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 16px 36px rgba(0,0,0,.65),0 0 0 1px rgba(255,255,255,.05)}
+.short #send{bottom:-2px}
+#send.show{opacity:1;transform:none;pointer-events:auto}
+@media (prefers-reduced-motion: reduce){#send{transition:none}}
+.chip.prime{background:linear-gradient(150deg,#ffc79b,#ff8a4c 55%,#d9622a);color:#1c0e05;border-color:transparent;font-weight:600;box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 8px 22px rgba(0,0,0,.4)}
 
 .dialwrap.unset .odo,.dialwrap.unset .unit{opacity:.25}
 /* session takeover: full-screen overlay above the tab bar; the READY flash stays above it */
@@ -257,8 +266,9 @@ html.fs .tabs{left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(sa
 .lb-panel .inp{height:44px}
 .lb-panel .lbl{margin-top:2px}
 @media (pointer:coarse){
-  .lb-handle{top:max(env(safe-area-inset-top,0px),60px)}       /* clear of the status bar / Dynamic Island even if the browser reports no inset */
-  .lb-panel{padding-top:calc(max(env(safe-area-inset-top,0px),60px) + 52px)}
+  /* the page starts below the iPhone status bar (measured: 759 of 852 px), so the grip sits at the very top; env() covers browsers that do draw under it */
+  .lb-handle{top:max(env(safe-area-inset-top,0px),4px)}
+  .lb-panel{padding-top:calc(max(env(safe-area-inset-top,0px),4px) + 52px)}
 }
 /* quick settings: row + switch */
 .lb-tg{position:relative;display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;box-sizing:border-box;padding:0 16px;min-height:48px;border-radius:16px;
@@ -292,7 +302,7 @@ html.fs .tabs{left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(sa
     <div class="head">
       <div><h1 id="ttl" style="user-select:none">Heat</h1>
         <div class="status"><span class="sdot"></span><span id="hstat">Not connected · demo values</span></div></div>
-      <span class="chip-demo" id="heatDemo">Demo</span>
+      <span class="chip-demo" id="heatDemo">Preview</span>
     </div>
     <div class="dialwrap" id="dial">
       <svg viewBox="0 0 300 300" aria-hidden="true">
@@ -332,7 +342,7 @@ html.fs .tabs{left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(sa
   <section class="screen" id="s-led">
     <div class="head"><div><h1>Light</h1><div class="sub">Any color. Saved on your Carta.</div>
       <div class="status" id="lstat"><span class="busy" id="lspin" hidden></span><span class="sdot" id="ldot"></span><span id="lstatTxt">Not connected</span></div></div>
-      <span class="chip-demo" id="ledDemo">Demo</span></div>
+      <span class="chip-demo" id="ledDemo">Preview</span></div>
     <button class="chip" id="connectBtn" style="align-self:flex-start">Connect to Carta</button>
     <div class="stagebox"><div class="halo" id="halo"></div><div class="device"><div class="scr"></div><div class="led" id="led"></div></div></div>
     <div class="wheelwrap" id="ww"><canvas id="wheel" width="460" height="460"></canvas><div id="knob"></div></div>
@@ -342,7 +352,7 @@ html.fs .tabs{left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(sa
     <button class="chip" id="photoBtn" style="align-self:flex-start">Pull colors from a photo</button><input type="file" id="photo" accept="image/*" hidden>
     <div class="lbl" id="looksLbl">Looks</div>
     <div class="looks" id="looks"></div>
-    <div class="note" id="looksNote">Looks use all five colour entries of your Carta’s LED. Pick one, then tap Save. The Puffco-style ones are recreated from the names and colour families of Puffco’s mood lights; the exact shades are my approximations.</div>
+    <div class="note" id="looksNote">Looks use all five colours of your Carta’s LED. Swipe, pick one, tap Save. Puffco-style shades are my approximations of their mood lights.</div>
     <div class="lbl">Curated</div>
     <div class="pal" id="pal"></div>
     <div class="lbl">Your slots</div>
@@ -606,10 +616,10 @@ function refreshUI(){
   if(READ_ONLY_BUILD){$('ledDemo').hidden=false;$('ledDemo').textContent='Read-only test'}
   $('lspin').hidden=!dev.busy;$('ldot').style.display=dev.busy?'none':'';
   if(!dev.busy){var msg=dev.error?'Not connected · '+dev.error:(dev.warn||statusText());$('lstat').classList.toggle('err',!!(dev.error||dev.warn));$('lstatTxt').textContent=msg}
-  $('connectBtn').disabled=dev.busy;$('connectBtn').textContent=dev.connected?'Refresh status':'Connect to Carta';
+  $('connectBtn').disabled=dev.busy;$('connectBtn').textContent=dev.connected?'Refresh status':'Connect to Carta';$('connectBtn').classList.toggle('prime',!dev.connected);
   $('send').disabled=!canWrite();$('send').textContent='Save to slot '+slot;
   drawSlots();
-  $('hstat').textContent=dev.status?statusText():'Not connected · demo values';
+  $('hstat').textContent=dev.status?statusText():'Not connected · preview only';
   $('hbat').textContent=dev.status?dev.status.battery+'%':'--';
   heatSync();
 }
@@ -622,7 +632,7 @@ function heatSync(){var c=devLive(),s=c?dev.status:null;
   $('st1').textContent='—';$('st2').textContent=userDur!=null&&!lenBad?userDur+'s':'—';$('dial').classList.toggle('unset',!tempSet)
   if(!$('hset'))return;
   $('heatDemo').hidden=c&&!READ_ONLY_BUILD;if(READ_ONLY_BUILD)$('heatDemo').textContent='Read-only test';
-  $('hconnect').disabled=typeof dev!=='undefined'&&!!dev&&dev.busy;$('hconnect').textContent=c?'Refresh status':'Connect to Carta';
+  $('hconnect').disabled=typeof dev!=='undefined'&&!!dev&&dev.busy;$('hconnect').textContent=c?'Refresh status':'Connect to Carta';$('hconnect').classList.toggle('prime',!c);
   if(activeUp&&(temp!==activeUp.t||userDur!==activeUp.d)){activeUp=null;pendLed=null}   /* moved away from the preset */
   var dch=c&&userDur!=null&&!lenBad&&userDur!==s.conc_custom_dur;
   $('hset').disabled=READ_ONLY_BUILD||!tempSet||lenBad||!(typeof dev!=='undefined'&&dev&&canWrite());
@@ -677,7 +687,7 @@ function sendPrepared(code,ack){var p=lastPrep,opts=lastOpts;
     var a=r.after?r.after.split(' ').map(function(x){return parseInt(x,16)}):null;
     if(a&&dev.status){dev.status.battery=a[12];dev.status.idle=a[5]===0;dev.status.remaining=a[5];dev.status.led_slot=a[13]>>4;
       dev.status.conc_preset=a[4]&15;dev.status.conc_custom_temp=a[10]<<8|a[11];dev.status.conc_custom_dur=a[15]}
-    if(r.ok){if(p&&p.action==='set')known[p.slot]=p.color;toast(confirmOn()?'Done. Your Carta confirmed nothing else changed.':'Done · '+String(opts.title||'saved').replace(/\?$/,''))}
+    if(r.ok){if(p&&p.action==='set'){known[p.slot]=p.color;$('send').classList.remove('show')}toast(confirmOn()?'Done. Your Carta confirmed nothing else changed.':'Done · '+String(opts.title||'saved').replace(/\?$/,''))}
     else{dev.warn='Sent, but another setting changed. Suggested undo (not sent): '+r.suggested_undo;toast('Check the status line')}
     refreshUI();if(r.ok&&opts.after)opts.after(r);else if(!r.ok&&opts.stopped)opts.stopped()})}
 function slotTap(n){
@@ -695,6 +705,8 @@ $('hset').onclick=function(){if(READ_ONLY_BUILD)return toast('Read-only test bui
 $('send').onclick=function(){if(slot>1&&!$('untested').checked)return;
   prepare({action:'set',slot:slot,color:pending,pattern:pat.toLowerCase(),brightness:+$('bri').value,allow_unconfirmed:slot>1,colors:lookCols||undefined},
     lookCols?'Save “'+lookName+'” to slot '+slot+'?':'Save to slot '+slot+'?')};
+/* the Save bar slides in once you change something on this tab, and tucks away after a save */
+['pointerdown','input','click'].forEach(function(ev){$('s-led').addEventListener(ev,function(e){var t=e.target&&e.target.closest&&e.target.closest('#ww,#pal .sw,#slots .slot,#looks .look,#pats .chip,#bri,#photoBtn');if(t)$('send').classList.add('show')},true)});
 api('/api/known').then(function(o){if(o.ok){known=o.known||{};dev.mock=!!o.mock}refreshUI()});
 /* ---- phone mode: the same frames and safety rules as led_control.py / led_web.py, over Web Bluetooth ----
    Used only when the page is NOT served by led_web.py (no server token), e.g. Chrome on Android.
@@ -1003,11 +1015,12 @@ function lookMark(){var on=document.querySelectorAll('#looks .look');for(var i=0
 function lookTouch(){if(lookBusy||lookKeep||!lookCols)return;lookCols=null;lookName='';lookMark()}   /* any manual colour change drops the look */
 function lookPick(l){lookBusy=true;pat=l[1];Array.prototype.forEach.call(document.querySelectorAll('#pats .chip'),function(x){x.classList.toggle('on',x.textContent===pat)});
   fromHex(l[2][0].slice(1));placeKnob();applyLight();lookBusy=false;lookCols=l[2].slice();lookName=l[0];lookMark();vib(6)}
-if(isPhone()){var lastG=null;LOOKS.forEach(function(l){if(l[3]!==lastG){lastG=l[3];var h=document.createElement('div');h.className='looksub';h.textContent=l[3]==='F'?'Your favorites':'Puffco-style';$('looks').appendChild(h)}
+if(isPhone()){var lastG=null,lrow=null;LOOKS.forEach(function(l){if(l[3]!==lastG){lastG=l[3];var h=document.createElement('div');h.className='looksub';h.textContent=l[3]==='F'?'Your favorites':'Puffco-style';$('looks').appendChild(h);
+      lrow=document.createElement('div');lrow.className='lrow';$('looks').appendChild(lrow)}   /* one swipeable row per group */
     var b=document.createElement('button'),hard=l[1]==='Blink'||l[1]==='Disco',c=l[2],uniq=c.every(function(x){return x===c[0]});
     var bg=uniq?c[0]:hard?'linear-gradient(90deg,'+c.map(function(x,i){return x+' '+i*20+'% '+(i+1)*20+'%'}).join(',')+')':'linear-gradient(90deg,'+c.join(',')+')';
     b.className='look';b.setAttribute('data-n',l[0]);b.innerHTML='<b style="background:'+bg+'"></b><span></span><small></small>';
-    b.querySelector('span').textContent=l[0];b.querySelector('small').textContent=l[1];b.onclick=function(){lookPick(l)};$('looks').appendChild(b)})}
+    b.querySelector('span').textContent=l[0];b.querySelector('small').textContent=l[1];b.onclick=function(){lookPick(l)};lrow.appendChild(b)})}
 else{$('looksLbl').hidden=true;$('looks').hidden=true;$('looksNote').hidden=true}
 
 /* session: live view of the real Carta. Watching is read-only. The only two in-session actions are
