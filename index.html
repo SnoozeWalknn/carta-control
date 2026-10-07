@@ -170,7 +170,6 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;bac
 .slot small{position:absolute;bottom:5px;left:0;right:0;text-align:center;font-size:7.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--mut)}
 .slot.act em{color:var(--acc2)}
 .slot.unk b{background:none!important;border:1.5px dashed rgba(255,255,255,.25);box-shadow:none!important}
-.slot.locked{opacity:.45}
 .slot:disabled,.cta:disabled,.chip:disabled{opacity:.4;cursor:not-allowed}
 .status.err{color:var(--hot)}
 .busy{display:inline-block;width:10px;height:10px;border-radius:50%;border:1.5px solid rgba(255,255,255,.18);border-top-color:var(--acc);animation:spin .9s linear infinite;flex:none}
@@ -187,12 +186,18 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;bac
 .apdet{font-size:12px;color:var(--mut)}.apdet summary{padding:8px 0;cursor:pointer}.apdet[open] summary{margin-bottom:8px}.apdet .glass,.apdet .note{margin-bottom:8px}
 #pats{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}#pats .chip{padding:0 2px;letter-spacing:.08em;font-size:10.5px;text-align:center;justify-content:center}
 .looks{display:block}
-.lrow{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x proximity;margin:0 -22px 10px;padding:2px 22px 8px;scrollbar-width:none}.lrow::-webkit-scrollbar{display:none}
+.lrow{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x proximity;scroll-padding-left:22px;scroll-padding-right:22px;margin:0 -22px 10px;padding:2px 22px 8px;scrollbar-width:none}   /* scroll-padding: iPhone snaps to the row's edge, not its padding, which pushed the first card flush left */.lrow::-webkit-scrollbar{display:none}
 .lrow .look{flex:none;width:150px;scroll-snap-align:start}
 .look{display:flex;flex-direction:column;gap:6px;padding:11px 12px;border-radius:18px;background:var(--glass);border:1px solid var(--bd);box-shadow:inset 0 1px 0 var(--hi);text-align:left;color:var(--fg);touch-action:manipulation}
 .look.on{border-color:rgba(255,178,122,.6);box-shadow:inset 0 1px 0 var(--hi),0 0 0 1px rgba(255,178,122,.3)}
 .look b{display:block;height:12px;border-radius:7px;box-shadow:inset 0 0 0 1px #ffffff14}.look span{font-size:13.5px;font-weight:500}.look small{font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--mut)}
 .chip.warn{border-color:#ff3a2a;color:#ff8a7c}
+/* length control: centered group, unit inside the box */
+.lenrow{display:flex;flex-direction:column;align-items:center;gap:8px}
+.lenctl{display:flex;align-items:center;justify-content:center;gap:14px}
+.lenbox{position:relative;width:104px;flex:none}.lenbox .inp{width:100%;flex:none;text-align:center;font-size:17px;padding:0 24px 0 10px}.lenbox span{position:absolute;right:15px;top:50%;transform:translateY(-50%);font-size:13px;color:var(--mut);pointer-events:none}
+/* slots: lock glyph + a real switch */
+.slot small{font-size:8px;letter-spacing:.14em}
 /* curve gauge */
 .cgauge,.clive{padding:16px;display:flex;flex-direction:column;gap:12px}#cliveTxt{font-size:13px;line-height:1.5;color:var(--mut)}
 #curveNote{max-width:300px;color:var(--fg)}
@@ -228,10 +233,12 @@ html,body{overscroll-behavior:none}
 .looksub{font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--mut);margin:6px 0 8px}
 #looksNote{font-size:11.5px;line-height:1.5}
 /* the main action stays in reach: floats above the tab bar while you scroll the Light tab */
-#send{position:sticky;bottom:-22px;z-index:6;opacity:0;transform:translateY(18px);pointer-events:none;transition:opacity .25s,transform .25s;box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 16px 36px rgba(0,0,0,.65),0 0 0 1px rgba(255,255,255,.05)}
+#send{position:sticky;bottom:-22px;z-index:6;box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 16px 36px rgba(0,0,0,.65),0 0 0 1px rgba(255,255,255,.05)}
 .short #send{bottom:-2px}
-#send.show{opacity:1;transform:none;pointer-events:auto}
-@media (prefers-reduced-motion: reduce){#send{transition:none}}
+#send:not(.show){display:none}   /* hidden = takes no room (it used to leave a gap at the end of the tab) */
+#send.show{animation:sendin .25s ease-out both}
+@keyframes sendin{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion: reduce){#send.show{animation:none}}
 .chip.prime{background:linear-gradient(150deg,#ffc79b,#ff8a4c 55%,#d9622a);color:#1c0e05;border-color:transparent;font-weight:600;box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 8px 22px rgba(0,0,0,.4)}
 
 .dialwrap.unset .odo,.dialwrap.unset .unit{opacity:.25}
@@ -336,7 +343,7 @@ html.fs .tabs{left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(sa
         <div class="dlbl" id="tlbl">Green</div>
       </div>
     </div>
-    <div class="rg" id="lenRow" style="justify-content:center;gap:10px">Length <button class="chip" id="lenM" aria-label="1 second shorter">−</button><input class="inp" id="lenIn" type="number" min="20" max="120" step="1" inputmode="numeric" pattern="[0-9]*" enterkeyhint="done" placeholder="—" style="max-width:88px;flex:none;text-align:center;font-size:16px" aria-label="Session length in seconds, 20 to 120"><button class="chip" id="lenP" aria-label="1 second longer">+</button>s</div>
+    <div id="lenRow" class="lenrow"><div class="lbl">Length</div><div class="lenctl"><button class="chip" id="lenM" aria-label="1 second shorter">−</button><div class="lenbox"><input class="inp" id="lenIn" type="number" min="20" max="120" step="1" inputmode="numeric" pattern="[0-9]*" enterkeyhint="done" placeholder="—" aria-label="Session length in seconds, 20 to 120"><span>s</span></div><button class="chip" id="lenP" aria-label="1 second longer">+</button></div></div>
     <div class="note" id="lenMsg" role="status" style="text-align:center;color:var(--acc)"></div>
     <div class="presets" id="presets"></div>
     <div class="note" id="hnow">Connect to set this on your Carta. Moving the dial never sends anything.</div>
@@ -368,7 +375,6 @@ html.fs .tabs{left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(sa
     <div class="pal" id="pal"></div>
     <div class="lbl">Your slots</div>
     <div class="slots" id="slots"></div>
-    <label class="chk"><input type="checkbox" id="untested"> Unlock untested slots 2–5</label>
     <button class="cta" id="send">Save to slot 1</button>
     <div class="note">Your light shows whenever the Carta is idle. While it heats, the Carta shows its own lights, so this app glows red on your phone instead.</div>
   </section>
@@ -608,10 +614,10 @@ function addSwatch(name,c,first){var b=document.createElement('button');b.classN
   if(first)$('pal').insertBefore(b,$('pal').firstChild);else $('pal').appendChild(b)}
 CUR.forEach(function(c){addSwatch(c[0],c[1])});
 function drawSlots(){$('slots').innerHTML='';var w=canWrite();
-  for(var n=1;n<=5;n++)(function(n){var c=known[n],act=!!(dev.status&&dev.status.led_slot===n),locked=n>1&&!$('untested').checked,b=document.createElement('button');
-    b.className='slot'+(n===slot?' on':'')+(c?'':' unk')+(act?' act':'')+(locked?' locked':'');
-    b.innerHTML='<em>'+n+(act?' · active':'')+'</em><b'+(c?' style="background:'+c+';box-shadow:0 0 16px '+c+'88"':'')+'></b><small>'+(n===1?'tested':'untested')+'</small>';
-    b.setAttribute('aria-label','Slot '+n+(act?', active':'')+(c?', color '+c:', color unknown')+(n===1?', tested':', untested'));
+  for(var n=1;n<=5;n++)(function(n){var c=known[n],act=!!(dev.status&&dev.status.led_slot===n),b=document.createElement('button');
+    b.className='slot'+(n===slot?' on':'')+(c?'':' unk')+(act?' act':'');
+    b.innerHTML='<em>'+n+(act?' · active':'')+'</em><b'+(c?' style="background:'+c+';box-shadow:0 0 16px '+c+'88"':'')+'></b><small>'+(c?'Saved':'Empty')+'</small>';
+    b.setAttribute('aria-label','Slot '+n+(act?', active':'')+(c?', color '+c:', empty'));
     b.disabled=!w;b.onclick=function(){slotTap(n)};$('slots').appendChild(b)})(n)}
 function wheelPtr(e){var r=$('ww').getBoundingClientRect(),w=r.width/2,dx=e.clientX-r.left-w,dy=e.clientY-r.top-w;
   var a=Math.atan2(dy,dx)*180/Math.PI;if(a<0)a+=360;hue=a;sat=clamp(Math.sqrt(dx*dx+dy*dy)/(w-8),0,1);pending=hex(hsv(hue,sat,1));placeKnob();applyLight()}
@@ -620,7 +626,6 @@ $('ww').addEventListener('pointerdown',function(e){wd=true;$('ww').setPointerCap
 $('ww').addEventListener('pointermove',function(e){if(wd)wheelPtr(e)});
 $('ww').addEventListener('pointerup',function(){wd=false});
 $('bri').addEventListener('input',function(){$('briVal').textContent=this.value+'/10';$('briNote').hidden=this.value==='10'});
-$('untested').addEventListener('change',function(){if(!this.checked&&slot>1)slot=1;refreshUI()});
 document.querySelector('[data-t=led]').addEventListener('click',function(){setTimeout(placeKnob,0)});
 
 /* device bridge: the only path to the Carta. Prepare = led_control.py dry run (frame + approval code);
@@ -712,7 +717,6 @@ function sendPrepared(code,ack){var p=lastPrep,opts=lastOpts;
     else{dev.warn='Sent, but another setting changed. Suggested undo (not sent): '+r.suggested_undo;toast('Check the status line')}
     refreshUI();if(r.ok&&opts.after)opts.after(r);else if(!r.ok&&opts.stopped)opts.stopped()})}
 function slotTap(n){
-  if(n>1&&!$('untested').checked)return toast('Slot '+n+' is untested. Tick “Unlock untested slots” first.');
   slot=n;if(known[n]){fromHex(known[n].slice(1));placeKnob();applyLight()}refreshUI();
   if(dev.status&&dev.status.led_slot===n)return toast('Slot '+n+' is already active');
   prepare({action:'select',slot:n},'Make slot '+n+' active?')}
@@ -723,8 +727,8 @@ $('hset').onclick=function(){if(READ_ONLY_BUILD)return toast('Read-only test bui
   var steps=heatSteps();if(!steps.length)return toast('Your Carta already has these settings');
   if(steps.some(function(s){return s.body.duration!=null&&(s.body.duration<20||s.body.duration>120)}))return toast('Session length must be 20–120 s');
   runSteps(steps,0)};
-$('send').onclick=function(){if(slot>1&&!$('untested').checked)return;
-  prepare({action:'set',slot:slot,color:pending,pattern:pat.toLowerCase(),brightness:+$('bri').value,allow_unconfirmed:slot>1,colors:lookCols||undefined},
+$('send').onclick=function(){
+  prepare({action:'set',slot:slot,color:pending,pattern:pat.toLowerCase(),brightness:+$('bri').value,colors:lookCols||undefined},
     lookCols?'Save “'+lookName+'” to slot '+slot+'?':'Save to slot '+slot+'?')};
 /* the Save bar slides in once you change something on this tab, and tucks away after a save */
 ['pointerdown','input','click'].forEach(function(ev){$('s-led').addEventListener(ev,function(e){var t=e.target&&e.target.closest&&e.target.closest('#ww,#pal .sw,#slots .slot,#looks .look,#pats .chip,#bri,#photoBtn');if(t)$('send').classList.add('show')},true)});
@@ -739,7 +743,7 @@ var READ_ONLY_BUILD=false;   /* build_site.py sets true for the hosted read-only
 var BLE={SVC:'1011123e-8535-b5a0-7140-a304d2495cb7',NOTIFY:'1011123e-8535-b5a0-7140-a304d2495cb8',WRITE:'1011123e-8535-b5a0-7140-a304d2495cb9',
   INFO:'0000180a-0000-1000-8000-00805f9b34fb'};
 var BLOCKED=[0x66,0x71,0x72,0x74,0x76,0x77,0x80,0x81,0x83,0x88,0xA4,0xAC,0xAE,0xAF,0xC1,0xCD,0xDE];
-var SLOT_OP={1:0xEE,2:0xE1,3:0xE2,4:0xE3,5:0xE4},CONFIRMED_SLOT=[0xEE],PATS={rotate:1,fade:2,disco:3,blink:4,static:5};
+var SLOT_OP={1:0xEE,2:0xE1,3:0xE2,4:0xE3,5:0xE4},CONFIRMED_SLOT=[0xEE,0xE1,0xE2,0xE3,0xE4],   /* all five slot opcodes: confirmed on the owner's Carta (slot 1 2026-10-06; slots 2-5 reported working 2026-10-07) */PATS={rotate:1,fade:2,disco:3,blink:4,static:5};
 var CC_STORE=[0,0],CC_START=[0xA5,0],CC_CANCEL=[0xAF,0];
 function hx(b){return Array.prototype.map.call(b,function(x){return ('0'+x.toString(16)).slice(-2)}).join(' ')}
 function u16(b,i){return b[i]<<8|b[i+1]}
