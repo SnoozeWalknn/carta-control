@@ -224,6 +224,7 @@ html.phoneui #watchBtn,html.phoneui #sessChip{display:none}   /* on the phone, C
 .gcols b{display:block;font-family:var(--disp);font-weight:300;font-size:28px;letter-spacing:-.03em;font-variant-numeric:tabular-nums;line-height:1.05}#gState{font-size:15px;font-weight:400;letter-spacing:0;padding-top:8px}
 .gbar{height:8px;border-radius:5px;background:rgba(255,255,255,.08);overflow:hidden}.gbar i{display:block;height:100%;width:0;border-radius:5px;background:linear-gradient(90deg,#ff8a4c,#ffb27a);transition:width .4s}
 .gverdict{font-size:13px;line-height:1.45;color:var(--fg)}.gverdict.ok{color:#7be0a0}.gverdict.off{color:#ffb27a}
+.ccap{padding:0 4px;font-size:13px;line-height:1.5;color:var(--fg)}
 .cleg{display:flex;gap:16px;align-items:center;font-size:11px;color:var(--mut);padding:0 4px}.cleg i{display:inline-block;width:18px;height:3px;border-radius:2px;margin-right:6px;vertical-align:middle}.cleg .lp{background:#ff9a5c}.cleg .la{background:#7be0ff}
 /* main build: no preview / demo badges */
 #heatDemo,#ledDemo{display:none!important}
@@ -455,7 +456,8 @@ html.fs .tabs{left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(sa
     <div class="head"><div><h1>Curve</h1><div class="sub">Pick a shape, then fine-tune every temperature and time.</div></div></div>
     <div class="row" id="cpre"></div>
     <div class="glass curvebox" id="cb"><svg id="csvg" viewBox="0 0 350 220"></svg></div>
-    <div class="cleg" id="cleg" hidden><span><i class="lp"></i>Your curve</span><span><i class="la"></i>What your Carta did</span></div>
+    <div class="cleg" id="cleg" hidden><span><i class="lp"></i>Your curve</span><span><i class="la"></i>What your Carta reported</span></div>
+    <div class="ccap" id="ccap" hidden></div>
     <div class="glass cgauge" id="cgauge" hidden>
       <div class="gcols"><div><span class="sl">Now</span><b id="gNow">--</b></div><div><span class="sl">Curve says</span><b id="gTarget">--</b></div><div><span class="sl">State</span><b id="gState">--</b></div></div>
       <div class="gbar"><i id="gFill"></i></div>
@@ -1128,7 +1130,7 @@ function curveGauge(){var run=live.sess!=='IDLE'&&live.connected,has=cTrace.leng
   v.className='gverdict';
   if(live.sess==='HEATING'){v.textContent='Heating to '+Math.round(tgt)+'°F. The curve starts when your Carta says Ready.'}
   else if(rdy){if(Math.abs(dl)<=6){v.textContent='On the curve (within 6°F)';v.className='gverdict ok'}else{v.textContent=Math.round(Math.abs(dl))+'°F '+(dl>0?'above':'below')+' the curve right now. Your Carta holds one temperature per session.';v.className='gverdict off'}}
-  else{v.textContent='Session finished. The blue line is what your Carta actually did.'}
+  else{v.textContent='Session finished. The blue line is what your Carta reported: during a session it reports the temperature it is set to hold.'}
   drawTrace()}
 /* Looks: ready-made multi-colour LED patterns (phone page). A look = a pattern + the Carta's five LED colour entries (the official
    app fills the same five entries for its multi-colour patterns). Picking one only fills the pending light; nothing is sent until
@@ -1197,12 +1199,12 @@ function curveRun(mode){
   var steps=mode==='test'?[{t:6,T:cv.hi-20>=480?cv.hi-20:Math.min(565,cv.hi+20)}]:curveSteps();
   if(!steps.length)return toast('This curve has no temperature changes to make. Use Start flat.');
   temp=mode==='test'?cv.hi:cv.st;tempSet=true;setLen(cv.c);          // the curve starts where the plan starts: your Start temperature
-  runSteps(heatSteps(),0,function(){cRun={mode:mode,steps:steps,i:0,sent:0,busy:false,armed:Date.now(),started:false,sentAt:null,t0:null,ev:false,err:null};
+  runSteps(heatSteps(),0,function(){cRun={mode:mode,steps:steps,i:0,sent:0,busy:false,armed:Date.now(),started:false,sentAt:null,t0:null,ev:false,err:null,hold:mode==='test'?cv.hi:cv.st,lag:null};
     curveNote(mode==='test'?'Live-change test: waiting for Ready…':'Curve: waiting for Ready…');startConfirmed()})}
 function curveLine(r,t){var n=r.steps[r.i];
   if(r.mode==='test')return r.sent?'Live-change test: change sent, watching whether your Carta follows…':'Live-change test: one change goes out '+Math.max(0,n.t-t)+' s from now.';
   return 'Curve running · '+r.sent+' of '+r.steps.length+' changes sent'+(n?' · next: '+n.T+'°F at '+n.t+' s':'')}
-function curveOnStart(){if(cRun&&!cRun.started&&Date.now()-cRun.armed<120000)cRun.started=true;else if(cRun&&!cRun.started)cRun=null}
+function curveOnStart(){var c=$('ccap');if(c)c.hidden=true;if(cRun&&!cRun.started&&Date.now()-cRun.armed<120000)cRun.started=true;else if(cRun&&!cRun.started)cRun=null}
 function curveTick(){var r=cRun;if(!r)return;if(!r.started){if(Date.now()-r.armed>120000)cRun=null;return}
   var s=live.st;if(!s||live.sess!=='READY'||r.err)return;var t=live.dur-s.remaining;
   curveEval(false);if(r.busy)return;
@@ -1217,7 +1219,7 @@ function curveEval(final){var r=cRun;if(!r||r.mode!=='test'||r.ev||r.sentAt==nul
   var pts=cTrace.filter(function(p){return p.t>=r.sentAt&&p.t<=r.sentAt+20});
   if(!final&&(!pts.length||pts[pts.length-1].t<r.sentAt+20))return;
   var tgt=r.steps[0].T,T0=r.t0,moved=pts.some(function(p){return tgt<T0?p.T<=T0-8:p.T>=T0+8});
-  r.ev=true;
+  r.ev=true;var near=pts.filter(function(p){return Math.abs(p.T-tgt)<=2})[0];r.lag=near?Math.max(0,near.t-r.sentAt):null;
   if(pts.length<4&&!moved){curveNote('Test inconclusive: the session ended too soon. Run it again.');toast('Test inconclusive');return}
   clSave({ok:moved,at:Date.now(),from:T0,to:tgt});curveUI();
   curveNote(moved?'Test passed: your Carta moved from '+T0+'°F toward '+tgt+'°F. Live curves are unlocked.':'Test result: your Carta ignored the change (it stayed near '+T0+'°F). Curves can’t change the heat on this Carta.');
@@ -1225,7 +1227,13 @@ function curveEval(final){var r=cRun;if(!r||r.mode!=='test'||r.ev||r.sentAt==nul
 function curveOnEnd(){var r=cRun;if(!r)return;if(r.mode==='test'&&!r.ev)curveEval(true);
   var last=r.steps.length&&r.sent?r.steps[Math.min(r.sent,r.steps.length)-1].T:null;
   if(r.mode==='curve')curveNote((r.err?'Curve stopped early. ':'Curve finished. ')+r.sent+' of '+r.steps.length+' changes sent'+(last?'; your button now uses '+last+'°F (set your usual temperature on Heat if you want it back).':'.'));
-  cRun=null;curveUI()}
+  curveCaptionLater(r);cRun=null;curveUI()}
+/* after a session: say what it was, and read back what your button's temperature is now (never assume) */
+function curveCaptionLater(r){setTimeout(function(){var c=$('ccap'),s=dev.status,now=s&&s.conc_custom_temp,txt='';if(!c)return;
+  var stored=now==null?'':(r.mode==='test'&&now===r.hold?' Your button is back at '+now+'°F, so the change applied to that session only.':' Your button now uses '+now+'°F (set your usual temperature on Heat if you want it back).');
+  if(r.mode==='test'){if(r.sentAt==null)return;txt='That was the one-change test, not your curve: it held '+r.hold+'°F, then changed to '+r.steps[0].T+'°F at '+r.sentAt+' s. Your Carta’s reading '+(r.lag==null?'did not settle on the new value':(r.lag<=1?'followed straight away':'followed within '+r.lag+' s'))+'.'+stored}
+  else{if(!r.sent)return;txt='Curve run: '+r.sent+' of '+r.steps.length+' temperature changes went out.'+stored}
+  c.textContent=txt;c.hidden=false},1800)}
 $('cstart').onclick=function(){if(clOk())curveRun('curve');else curveStartFlat()};
 $('cflat').onclick=function(){curveStartFlat()};
 $('ctest').onclick=function(){curveRun('test')};   /* curveUI() runs on every curve redraw (curveBtn), after the curve data exists */
