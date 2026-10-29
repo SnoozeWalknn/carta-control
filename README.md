@@ -5,8 +5,6 @@ session logging and a firmware updater, all over Web Bluetooth, all on the phone
 
 **Live:** https://snoozewalknn.github.io/carta-control/
 
-![Heat tab](https://snoozewalknn.github.io/carta-control/../carta-control/index.html)
-
 `index.html` is a build artifact: minified, comments stripped. The source lives with
 the author and is not published as readable files.
 
